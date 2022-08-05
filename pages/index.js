@@ -27,8 +27,8 @@ export default function Home() {
   const wallet = useWallet();
 
   const [address, setAddress] = useState(
-    // wallet.publicKey
-    "7FKaZcmr6WRQPAqFQXYFNgF5St2RPZt8ay47hLBho84G"
+    wallet.publicKey
+    // "7FKaZcmr6WRQPAqFQXYFNgF5St2RPZt8ay47hLBho84G"
     // "85tJUsy1J6TYxxCMKR24owFuMyTeKtM1eWbbcVjLtSq2"
     // "2iLBgrVgknFo53D8wrdWY86o1HEXUJsZs8mjYk8J37X2"
   );
@@ -84,8 +84,8 @@ export default function Home() {
       setCtzns(list.filter(nft => nft.symbol === "CTZN"));
       setAliens(list.filter(nft => nft.symbol !== "CTZN"));
 
-      // setStakedCtzns(list.concat(list).concat(list));
-      // setStakedAliens(list.concat(list).concat(list).concat(list));
+      setStakedCtzns(list);
+      setStakedAliens(list);
     } catch (e) {
       console.error(e);
     }
