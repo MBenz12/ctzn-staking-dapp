@@ -17,7 +17,7 @@ import '@solana/wallet-adapter-react-ui/styles.css';
 import { Transition, Dialog } from '@headlessui/react';
 import { Metaplex } from '@metaplex-foundation/js';
 import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
-import { MetaplexProvider } from './MetaplexProvider';
+import { MetaplexProvider } from '../context/MetaplexProvider';
 
 const connection = new Connection(clusterApiUrl('mainnet-beta'));
 const mx = Metaplex.make(connection);
