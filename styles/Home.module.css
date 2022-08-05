@@ -87,3 +87,8 @@
   padding:5px;
   margin:5px;
 }
+
+.loadingIcon {
+  margin-top: 50px;
+  max-width: 80%;
+}
