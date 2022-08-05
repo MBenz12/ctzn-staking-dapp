@@ -14,7 +14,7 @@ import {
   WalletMultiButton
 } from '@solana/wallet-adapter-react-ui';
 import '@solana/wallet-adapter-react-ui/styles.css';
-import { Transition, Dialog, Fragment } from '@headlessui/react';
+import { Transition, Dialog } from '@headlessui/react';
 import { Metaplex } from '@metaplex-foundation/js';
 import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
 import { MetaplexProvider } from './MetaplexProvider';
@@ -84,7 +84,7 @@ export default function Home() {
       setCtzns(list.filter(nft => nft.symbol === "CTZN"));
       setAliens(list.filter(nft => nft.symbol !== "CTZN"));
 
-      setStakedCtzns(list.concat(list).concat(list));
+      // setStakedCtzns(list.concat(list).concat(list));
       // setStakedAliens(list.concat(list).concat(list).concat(list));
     } catch (e) {
       console.error(e);
@@ -202,10 +202,9 @@ export default function Home() {
                     </div>
                   </div>}
 
-                  <Transition appear show={stakeDialogOpen} as={Fragment}>
+                  <Transition appear show={stakeDialogOpen}>
                     <Dialog as="div" className="relative z-10" onClose={() => setStakeDialogOpen(false)}>
                       <Transition.Child
-                        as={Fragment}
                         enter="ease-out duration-300"
                         enterFrom="opacity-0"
                         enterTo="opacity-100"
@@ -219,7 +218,6 @@ export default function Home() {
                       <div className="fixed inset-0 overflow-y-auto">
                         <div className="flex min-h-full items-center justify-center p-4 text-center">
                           <Transition.Child
-                            as={Fragment}
                             enter="ease-out duration-300"
                             enterFrom="opacity-0 scale-95"
                             enterTo="opacity-100 scale-100"
@@ -310,10 +308,9 @@ export default function Home() {
                     </Dialog>
                   </Transition>
 
-                  <Transition appear show={ctznDialogOpen} as={Fragment}>
+                  <Transition appear show={ctznDialogOpen}>
                     <Dialog as="div" className="relative z-10" onClose={() => setCtznDialogOpen(false)}>
                       <Transition.Child
-                        as={Fragment}
                         enter="ease-out duration-300"
                         enterFrom="opacity-0"
                         enterTo="opacity-100"
@@ -327,7 +324,6 @@ export default function Home() {
                       <div className="fixed inset-0 overflow-y-auto">
                         <div className="flex min-h-full items-center justify-center p-4 text-center">
                           <Transition.Child
-                            as={Fragment}
                             enter="ease-out duration-300"
                             enterFrom="opacity-0 scale-95"
                             enterTo="opacity-100 scale-100"
@@ -384,10 +380,9 @@ export default function Home() {
                     </Dialog>
                   </Transition>
 
-                  <Transition appear show={alienDialogOpen} as={Fragment}>
+                  <Transition appear show={alienDialogOpen}>
                     <Dialog as="div" className="relative z-10" onClose={() => setAlienDialogOpen(false)}>
                       <Transition.Child
-                        as={Fragment}
                         enter="ease-out duration-300"
                         enterFrom="opacity-0"
                         enterTo="opacity-100"
@@ -401,7 +396,6 @@ export default function Home() {
                       <div className="fixed inset-0 overflow-y-auto">
                         <div className="flex min-h-full items-center justify-center p-4 text-center">
                           <Transition.Child
-                            as={Fragment}
                             enter="ease-out duration-300"
                             enterFrom="opacity-0 scale-95"
                             enterTo="opacity-100 scale-100"
