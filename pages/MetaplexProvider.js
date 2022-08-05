@@ -18,3 +18,5 @@ export const MetaplexProvider = ({ children }) => {
     </MetaplexContext.Provider>
   )
 }
+
+export default MetaplexProvider;

@@ -9,3 +9,5 @@ export const MetaplexContext = createContext(DEFAULT_CONTEXT);
 export function useMetaplex() {
   return useContext(MetaplexContext);
 }
+
+export default useMetaplex;
