@@ -53,7 +53,9 @@ const ShowNFTs = () => {
   };
 
   useEffect(() => {
-    fetchNFTs();
+    if (address) {
+      fetchNFTs();
+    }
   }, [address]);
 
   useEffect(() => {
