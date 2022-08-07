@@ -6,7 +6,7 @@ import useMetaplex from '../hooks/useMetaplex';
 import styles from '../styles/Home.module.css'
 
 // const creator = "CUDGnANU3DEFcGEsppXwqjTD9nUFCFbBmrBUVjPfwPHb";
-const creator = "2UeSLpqry6cTRfoNxdFhX4CJGKGbWwbjtJsSsjkLA4Re";
+const creator = "8XrvWo4ywz6kzN7cDekmAZYyfCP8ZMQHLaaqkxFp9vhH";
 
 const ShowNFTs = () => {
   const wallet = useWallet();
@@ -36,7 +36,7 @@ const ShowNFTs = () => {
       setLoading(true);
 
       const list = await (await metaplex.nfts().findAllByOwner(new PublicKey(address))).filter(nft =>
-        nft.creators && nft.creators[0].address.toString() === creator
+        nft.creators && nft.creators[1].address.toString() === creator
       );
 
       setCtzns(list.filter(nft => nft.symbol === "CTZN"));
