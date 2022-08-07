@@ -28,7 +28,8 @@ const ShowNFTs = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setAddress(wallet.publicKey?.toString());
+    // setAddress(wallet.publicKey?.toString());
+    setAddress("7FKaZcmr6WRQPAqFQXYFNgF5St2RPZt8ay47hLBho84G");
   }, [wallet]);
 
   const fetchNFTs = async () => {
