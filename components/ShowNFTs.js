@@ -50,7 +50,7 @@ const ShowNFTs = () => {
 
   useEffect(() => {
     fetchNFTs();
-  }, []);
+  }, [address]);
 
   useEffect(() => {
     if (!ctzns && !aliens) {
