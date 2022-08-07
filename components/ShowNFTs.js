@@ -13,8 +13,8 @@ const ShowNFTs = () => {
   const { metaplex } = useMetaplex();
   const [address, setAddress] = useState(
     // wallet.publicKey?.toString()
-    "7FKaZcmr6WRQPAqFQXYFNgF5St2RPZt8ay47hLBho84G"
-    // "85tJUsy1J6TYxxCMKR24owFuMyTeKtM1eWbbcVjLtSq2"
+    // "7FKaZcmr6WRQPAqFQXYFNgF5St2RPZt8ay47hLBho84G"
+    "85tJUsy1J6TYxxCMKR24owFuMyTeKtM1eWbbcVjLtSq2"
     // "2iLBgrVgknFo53D8wrdWY86o1HEXUJsZs8mjYk8J37X2"
   );
   const [stakeDialogOpen, setStakeDialogOpen] = useState(false);
@@ -29,7 +29,7 @@ const ShowNFTs = () => {
 
   useEffect(() => {
     // setAddress(wallet.publicKey?.toString());
-    setAddress("7FKaZcmr6WRQPAqFQXYFNgF5St2RPZt8ay47hLBho84G");
+    setAddress("85tJUsy1J6TYxxCMKR24owFuMyTeKtM1eWbbcVjLtSq2");
   }, [wallet]);
 
   const fetchNFTs = async () => {
