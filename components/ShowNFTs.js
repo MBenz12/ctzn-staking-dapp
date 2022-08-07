@@ -265,7 +265,8 @@ const ShowNFTs = () => {
                                   setSelectedNfts(selectedNfts.concat(nft.mint));
                                 }
                               }}
-                              className="w-[120px] h-[120px] rounded-lg border border-indigo-400">
+                              className={`w-[120px] h-[120px] rounded-lg ${selectedNfts.includes(nft.mint) ? "border-2 border-red-400" : "border border-indigo-400"}`}
+                            >
                               <img
                                 className="w-full h-full rounded-lg p-1"
                                 src={nft.metadata.image || '/fallbackImage.jpg'}
