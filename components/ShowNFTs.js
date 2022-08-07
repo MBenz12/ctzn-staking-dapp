@@ -37,7 +37,7 @@ const ShowNFTs = () => {
       setLoading(true);
 
       const list = await (await metaplex.nfts().findAllByOwner(new PublicKey(address))).filter(nft =>
-        nft.creators && nft.creators.filter(creator => creator.address.toString() === candyMachine).length
+        nft.creators && nft.creators.filter(creator => creator.address.toString() === candyMachine).length && nft.name
       );
 
       console.log(list);
