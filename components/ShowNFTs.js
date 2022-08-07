@@ -5,16 +5,16 @@ import { PublicKey } from '@solana/web3.js';
 import useMetaplex from '../hooks/useMetaplex';
 import styles from '../styles/Home.module.css'
 
-// const creator = "CUDGnANU3DEFcGEsppXwqjTD9nUFCFbBmrBUVjPfwPHb";
-const candyMachine = "8XrvWo4ywz6kzN7cDekmAZYyfCP8ZMQHLaaqkxFp9vhH";
+const candyMachine = "CUDGnANU3DEFcGEsppXwqjTD9nUFCFbBmrBUVjPfwPHb";
+// const candyMachine = "8XrvWo4ywz6kzN7cDekmAZYyfCP8ZMQHLaaqkxFp9vhH";
 
 const ShowNFTs = () => {
   const wallet = useWallet();
   const { metaplex } = useMetaplex();
   const [address, setAddress] = useState(
-    // wallet.publicKey?.toString()
+    wallet.publicKey?.toString()
     // "7FKaZcmr6WRQPAqFQXYFNgF5St2RPZt8ay47hLBho84G"
-    "85tJUsy1J6TYxxCMKR24owFuMyTeKtM1eWbbcVjLtSq2"
+    // "85tJUsy1J6TYxxCMKR24owFuMyTeKtM1eWbbcVjLtSq2"
     // "2iLBgrVgknFo53D8wrdWY86o1HEXUJsZs8mjYk8J37X2"
   );
   const [stakeDialogOpen, setStakeDialogOpen] = useState(false);
@@ -28,8 +28,8 @@ const ShowNFTs = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // setAddress(wallet.publicKey?.toString());
-    setAddress("85tJUsy1J6TYxxCMKR24owFuMyTeKtM1eWbbcVjLtSq2");
+    setAddress(wallet.publicKey?.toString());
+    // setAddress("85tJUsy1J6TYxxCMKR24owFuMyTeKtM1eWbbcVjLtSq2");
   }, [wallet]);
 
   const fetchNFTs = async () => {
@@ -39,6 +39,8 @@ const ShowNFTs = () => {
       const list = await (await metaplex.nfts().findAllByOwner(new PublicKey(address))).filter(nft =>
         nft.creators && nft.creators.filter(creator => creator.address.toString() === candyMachine).length
       );
+
+      console.log(list);
 
       setCtzns(list.filter(nft => nft.symbol === "CTZN"));
       setAliens(list.filter(nft => nft.symbol !== "CTZN"));
