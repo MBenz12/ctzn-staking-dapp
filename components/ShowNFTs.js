@@ -90,7 +90,10 @@ const ShowNFTs = () => {
         ) : <div className="fixed inset-0 flex items-center justify-center flex-col">
           {(!!ctzns.length || !!aliens.length) && <button
             type="button"
-            onClick={() => setStakeDialogOpen(true)}
+            onClick={() => {
+              setStakeDialogOpen(true);
+              setSelectedNfts([]);
+            }}
             className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
           >
             Play Now
@@ -119,7 +122,10 @@ const ShowNFTs = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setCtznDialogOpen(true)}
+                  onClick={() => {
+                    setCtznDialogOpen(true);
+                    setSelectedNfts([]);
+                  }}
                   className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                 >
                   Un-stake CTZN
@@ -148,7 +154,10 @@ const ShowNFTs = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setAlienDialogOpen(true)}
+                  onClick={() => {
+                    setAlienDialogOpen(true);
+                    setSelectedNfts([]);
+                  }}
                   className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                 >
                   Un-stake ALIEN
@@ -246,7 +255,16 @@ const ShowNFTs = () => {
                       <div className="w-[600px] h-[150px] overflow-x-auto flex items-center">
                         <div className="flex space-x-4 ">
                           {aliens.map(nft => (
-                            <div key={nft.mint} className="w-[120px] h-[120px] rounded-lg border border-indigo-400">
+                            <div
+                              key={nft.mint}
+                              onClick={() => {
+                                if (selectedNfts.includes(nft.mint)) {
+                                  setSelectedNfts(selectedNfts.filter(mint => mint !== nft.mint));
+                                } else {
+                                  setSelectedNfts(selectedNfts.concat(nft.mint));
+                                }
+                              }}
+                              className="w-[120px] h-[120px] rounded-lg border border-indigo-400">
                               <img
                                 className="w-full h-full rounded-lg p-1"
                                 src={nft.metadata.image || '/fallbackImage.jpg'}
