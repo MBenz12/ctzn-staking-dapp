@@ -5,7 +5,8 @@ import { PublicKey } from '@solana/web3.js';
 import useMetaplex from '../hooks/useMetaplex';
 import styles from '../styles/Home.module.css'
 
-const creator = "CUDGnANU3DEFcGEsppXwqjTD9nUFCFbBmrBUVjPfwPHb";
+// const creator = "CUDGnANU3DEFcGEsppXwqjTD9nUFCFbBmrBUVjPfwPHb";
+const creator = "2UeSLpqry6cTRfoNxdFhX4CJGKGbWwbjtJsSsjkLA4Re";
 
 const ShowNFTs = () => {
   const wallet = useWallet();
