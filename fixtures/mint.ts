@@ -24,7 +24,9 @@ class Mint {
     mint: anchor.web3.Keypair = anchor.web3.Keypair.generate(),
     freezeAuthority: anchor.web3.PublicKey | null = null
   ): Promise<Mint> {
+    console.log("creating mint...");
     spawnMoney(program, authority.publicKey, 1);
+    console.log('request airdrop 1 sol');
     await createMint(
       program.provider.connection, 
       authority, 
@@ -32,6 +34,7 @@ class Mint {
       freezeAuthority, 
       0,
     );
+    console.log("Mint created successfully!");
     return new Mint(mint.publicKey, authority, program);
   }
 
