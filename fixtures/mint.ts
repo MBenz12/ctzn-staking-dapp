@@ -26,7 +26,7 @@ class Mint {
   ): Promise<Mint> {
     console.log("creating mint...");
     await spawnMoney(program, authority.publicKey, 1);
-    console.log('request airdrop 1 sol');
+    console.log('request airdrop 1 sol ');
     await createMint(
       program.provider.connection, 
       authority, 
