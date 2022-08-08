@@ -25,7 +25,7 @@ class Mint {
     freezeAuthority: anchor.web3.PublicKey | null = null
   ): Promise<Mint> {
     console.log("creating mint...");
-    spawnMoney(program, authority.publicKey, 1);
+    await spawnMoney(program, authority.publicKey, 1);
     console.log('request airdrop 1 sol');
     await createMint(
       program.provider.connection, 
