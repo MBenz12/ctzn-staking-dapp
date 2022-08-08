@@ -11,8 +11,8 @@ import {
   SystemProgram,
 } from "@solana/web3.js";
 import { Mint } from "./mint";
-import { 
-  getRewardAddress, 
+import {
+  getRewardAddress,
   getUserAddress,
   getStakeAddress,
   spawnMoney,
@@ -36,7 +36,7 @@ export class Vault {
     public ctznsPoolAmount: number,
     public aliensPoolAmount: number,
     public godsPoolAmount: number,
-  ) {}
+  ) { }
 
   async fetch(): Promise<VaultData | null> {
     return (await this.program.account.vault.fetchNullable(
@@ -66,24 +66,28 @@ export class Vault {
     sig: TransactionSignature;
   }> {
     // await spawnMoney(program, authority.publicKey, 10);
-
+    console.log(authority.publicKey.toString());
+    console.log('Creating vault...');
     const [ctznsPool, ctzns_pool_bump] = await getRewardAddress(
       vaultKey.publicKey,
       program,
       0
     );
+    console.log('Ctzns reward pool address: ', ctznsPool.toString());
 
     const [aliensPool, aliens_pool_bump] = await getRewardAddress(
       vaultKey.publicKey,
       program,
       1
     );
+    console.log('Aliens reward pool address: ', aliensPool.toString());
 
     const [godsPool, gods_pool_bump] = await getRewardAddress(
       vaultKey.publicKey,
       program,
       2
     );
+    console.log('Gods reward pool address: ', godsPool.toString());
 
     const ctznsPoolAccount = await mint.getAssociatedTokenAddress(ctznsPool);
     const aliensPoolAccount = await mint.getAssociatedTokenAddress(aliensPool);
@@ -115,6 +119,7 @@ export class Vault {
         },
       }
     );
+    console.log('Vault created successfully!', txSignature);
     return {
       authority,
       vault: new Vault(
@@ -136,7 +141,7 @@ export class Vault {
   }
 
   async createUser({
-    authority = Keypair.generate(), 
+    authority = Keypair.generate(),
     userType
   }: {
     authority?: Keypair,
@@ -190,8 +195,8 @@ export class Vault {
     const txSignature = await this.program.rpc.fund(amount, {
       accounts: {
         funder: funder.publicKey,
-        authority: authority.publicKey, 
-        vault: this.key, 
+        authority: authority.publicKey,
+        vault: this.key,
         ctznsPoolAccount: this.ctznsPoolAccount,
         funderAccount,
         tokenProgram: TOKEN_PROGRAM_ID,
@@ -255,9 +260,9 @@ export class Vault {
     stakeAccount: TokenAccount<PublicKey>,
   ): Promise<boolean> {
     const [vaultPda, vaultStakeBump] = await getStakeAddress(
-      this.key, 
-      authority.publicKey, 
-      stakeAccount.key, 
+      this.key,
+      authority.publicKey,
+      stakeAccount.key,
       this.program
     );
 
@@ -417,5 +422,5 @@ export type StakeItemData = {
   firstStakedTime: anchor.BN;
   lastClaimedTime: anchor.BN;
   earnedReward: anchor.BN;
-} 
+}
 
