@@ -144,16 +144,18 @@ export async function checkTokenAccounts(
   return checkedAccounts.length > 0;
 }
 
-export async function createVault(program: Program<NftStaking>): Promise<{
+export async function createVault(program: Program<NftStaking>, wallet: Keypair): Promise<{
   mint: Mint;
   authority: Keypair;
   vault: Vault;
 }> {
   // create reward token
   const mint = await Mint.create(program);
-
+  console.log("mint creted successfully!");
+  
   // create vault
   const { authority, vault } = await Vault.create({
+    authority: wallet,
     program,
     mint,
   });

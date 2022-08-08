@@ -44,8 +44,9 @@ const AdminPanel = () => {
 
   const handleCreateVaultClick = async () => {
     // try {
-      const { vault, authority } = await createVault(program);
+      const { vault, authority } = await createVault(program, wallet);
 
+      console.log("Vault created successfully!");
       // fetch vault data
       const vaultData = await vault.fetch();
       console.log(vaultData);

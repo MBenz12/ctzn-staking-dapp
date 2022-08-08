@@ -65,7 +65,7 @@ export class Vault {
     vault: Vault;
     sig: TransactionSignature;
   }> {
-    await spawnMoney(program, authority.publicKey, 10);
+    // await spawnMoney(program, authority.publicKey, 10);
 
     const [ctznsPool, ctzns_pool_bump] = await getRewardAddress(
       vaultKey.publicKey,
