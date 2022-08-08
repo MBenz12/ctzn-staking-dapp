@@ -151,7 +151,6 @@ export async function createVault(program: Program<NftStaking>, wallet: Keypair)
 }> {
   // create reward token
   const mint = await Mint.create(program);
-  console.log("mint creted successfully!");
   
   // create vault
   const { authority, vault } = await Vault.create({

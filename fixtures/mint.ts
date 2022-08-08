@@ -57,7 +57,8 @@ class Mint {
   >(owner: T): Promise<anchor.web3.PublicKey> {
     return await getAssociatedTokenAddress(
       this.key,
-      toPublicKey(owner)
+      toPublicKey(owner),
+      true
     );
   }
 
