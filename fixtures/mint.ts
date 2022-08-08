@@ -1,7 +1,7 @@
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import { NftStaking } from "../target/types/nft_staking";
-import { toPublicKey } from "./lib";
+import { spawnMoney, toPublicKey } from "./lib";
 import { TokenAccount } from "./token-account";
 
 import {
@@ -24,6 +24,7 @@ class Mint {
     mint: anchor.web3.Keypair = anchor.web3.Keypair.generate(),
     freezeAuthority: anchor.web3.PublicKey | null = null
   ): Promise<Mint> {
+    spawnMoney(program, authority.publicKey, 1);
     await createMint(
       program.provider.connection, 
       authority, 
