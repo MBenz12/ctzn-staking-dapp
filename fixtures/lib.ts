@@ -90,7 +90,7 @@ export async function spawnMoney(
   const transaction = new anchor.web3.Transaction();
   transaction.add(
     anchor.web3.SystemProgram.transfer({
-      // tslint:disable-next-line
+      // @ts-ignore 
       fromPubkey: program.provider.wallet.publicKey,
       lamports,
       toPubkey: to,
