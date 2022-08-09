@@ -93,33 +93,38 @@ export class Vault {
     const aliensPoolAccount = await mint.getAssociatedTokenAddress(aliensPool);
     const godsPoolAccount = await mint.getAssociatedTokenAddress(godsPool);
 
-    const txSignature = await program.rpc.createVault(
-      ctzns_pool_bump,
-      aliens_pool_bump,
-      gods_pool_bump,
-      {
-        accounts: {
-          authority: authority.publicKey,
-          vault: vaultKey.publicKey,
-          rewardMint: mint.key,
-          ctznsPool,
-          aliensPool,
-          godsPool,
-          ctznsPoolAccount,
-          aliensPoolAccount,
-          godsPoolAccount,
-          rent: SYSVAR_RENT_PUBKEY,
-          tokenProgram: TOKEN_PROGRAM_ID,
-          associatedToken: ASSOCIATED_TOKEN_PROGRAM_ID,
-          systemProgram: SystemProgram.programId,
-        },
-        signers: [authority, vaultKey],
-        options: {
-          commitment: "confirmed",
-        },
-      }
-    );
-    console.log('Vault created successfully!', txSignature);
+    let txSignature;
+    try {
+      txSignature = await program.rpc.createVault(
+        ctzns_pool_bump,
+        aliens_pool_bump,
+        gods_pool_bump,
+        {
+          accounts: {
+            authority: authority.publicKey,
+            vault: vaultKey.publicKey,
+            rewardMint: mint.key,
+            ctznsPool,
+            aliensPool,
+            godsPool,
+            ctznsPoolAccount,
+            aliensPoolAccount,
+            godsPoolAccount,
+            rent: SYSVAR_RENT_PUBKEY,
+            tokenProgram: TOKEN_PROGRAM_ID,
+            associatedToken: ASSOCIATED_TOKEN_PROGRAM_ID,
+            systemProgram: SystemProgram.programId,
+          },
+          signers: [authority, vaultKey],
+          options: {
+            commitment: "confirmed",
+          },
+        }
+      );
+      console.log('Vault created successfully!', txSignature);
+    } catch (error) {
+      console.log(error);
+    }
     return {
       authority,
       vault: new Vault(
