@@ -21,21 +21,20 @@ class Mint {
   static async create(
     program: Program<NftStaking>,
     authority: anchor.web3.Keypair = anchor.web3.Keypair.generate(),
-    mint: anchor.web3.Keypair = anchor.web3.Keypair.generate(),
     freezeAuthority: anchor.web3.PublicKey | null = null
   ): Promise<Mint> {
     console.log("creating mint...");
     await spawnMoney(program, authority.publicKey, 1);
     console.log('request airdrop 1 sol ');
-    await createMint(
+    let mint = await createMint(
       program.provider.connection, 
       authority, 
-      mint.publicKey,
+      authority.publicKey,
       freezeAuthority, 
       0,
     );
     console.log("Mint created successfully!");
-    return new Mint(mint.publicKey, authority, program);
+    return new Mint(mint, authority, program);
   }
 
   async mintTokens<T extends anchor.web3.PublicKey | anchor.web3.Keypair>(
