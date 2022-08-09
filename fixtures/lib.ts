@@ -150,13 +150,16 @@ export async function createVault(program: Program<NftStaking>, wallet: Keypair)
   vault: Vault;
 }> {
   // create reward token
-  const mint = await Mint.create(program);
+  const mint = new Mint(
+    new PublicKey("D6gMcJ7t8o7CtaaegcmE6iir6TFLUQq4poDftDcTxtFx"),
+    null,
+    program
+  );
   console.log('mint', mint.key.toString());
-  const tokenAccount = await mint.createAssociatedAccount(
+  const tokenAccount = await mint.getAssociatedTokenAddress(
     wallet.publicKey
   );
-  console.log('tokenAccount', tokenAccount);
-  await mint.mintTokens(tokenAccount, 10000);
+  console.log('tokenAccount', tokenAccount.toString());
   // create vault
   const { authority, vault } = await Vault.create({
     authority: wallet,
