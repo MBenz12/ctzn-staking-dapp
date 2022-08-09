@@ -64,8 +64,7 @@ class Mint {
   async createAssociatedAccount<
     T extends anchor.web3.PublicKey | anchor.web3.Keypair
   >(owner: T): Promise<TokenAccount<T>> {
-    const tokenAccount = await this.getAssociatedTokenAddress(owner);
-    await createAssociatedTokenAccount(
+    const tokenAccount = await createAssociatedTokenAccount(
       this.program.provider.connection,
       this.authority,
       this.key,
