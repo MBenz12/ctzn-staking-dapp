@@ -3,17 +3,7 @@ import { useEffect, useState } from 'react';
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import NftStaking from "../target/idl/nft_staking.json";
-// import { PublicKey } from '@solana/web3.js';
-import {
-  checkTokenAccounts,
-  createVault,
-  getRewardAddress,
-  getTokenAmounts,
-  getStakeAddress,
-  sleep,
-  spawnMoney,
-} from "../fixtures/lib";
-// import { UserData, VaultData } from "../fixtures/vault";
+
 import { Keypair } from '@solana/web3.js';
 
 const programId = "HES9CZTGAyJvpyHaVEAVxjfSHNw1wY27eeMZJBefFKgk";
@@ -43,16 +33,6 @@ const AdminPanel = () => {
   // }, [address]);
 
   const handleCreateVaultClick = async () => {
-    // try {
-      const { vault, authority } = await createVault(program, wallet);
-
-      console.log("Vault created successfully!");
-      // fetch vault data
-      const vaultData = await vault.fetch();
-      console.log(vaultData);
-    // } catch (error) {
-    //   console.log(error);
-    // }
   }
 
   return (
