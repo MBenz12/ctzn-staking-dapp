@@ -9,6 +9,7 @@ import {
   getRewardAddress
 } from '../fixtures/lib';
 import { Vault } from '../fixtures/vault';
+import { Mint } from '../fixtures/mint';
 import { Keypair, PublicKey } from '@solana/web3.js';
 
 const programId = "HES9CZTGAyJvpyHaVEAVxjfSHNw1wY27eeMZJBefFKgk";
@@ -34,19 +35,23 @@ const AdminPanel = () => {
   useEffect(() => {
     const createVault = async () => {
       const vaultKey = new PublicKey(process.env.NEXT_PUBLIC_VAULT_KEY);
-      const mint = new PublicKey(process.env.NEXT_PUBLIC_FLWR_MINT);
+      const mint = new Mint(
+        new PublicKey(process.env.NEXT_PUBLIC_FLWR_MINT),
+        null,
+        program
+      );
       const [ctznsPool] = await getRewardAddress(
         vaultKey,
         program,
         0
       );
       const [aliensPool] = await getRewardAddress(
-        vaultKey.publicKey,
+        vaultKey,
         program,
         1
       );
       const [godsPool] = await getRewardAddress(
-        vaultKey.publicKey,
+        vaultKey,
         program,
         2
       );
@@ -55,7 +60,7 @@ const AdminPanel = () => {
       const godsPoolAccount = await mint.getAssociatedTokenAddress(godsPool);
       setVault(new Vault(
         vaultKey, 
-        mint, 
+        mint.key, 
         ctznsPool, 
         aliensPool, 
         godsPool, 
@@ -67,7 +72,7 @@ const AdminPanel = () => {
         0
       ));
     }
-    if (process.env.NEXT_PUBLIC_VAULT_KEY) createVault();
+    if (process.env.NEXT_PUBLIC_VAULT_KEY && process.env.NEXT_PUBLIC_FLWR_MINT) createVault();
   }, []);
 
   // useEffect(() => {
