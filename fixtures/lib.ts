@@ -36,7 +36,7 @@ export async function getRewardAddress(
   }
   return await PublicKey.findProgramAddress(
     [
-      Buffer.from(seed_prefix), 
+      Buffer.from(seed_prefix),
       source.toBuffer()
     ],
     program.programId
@@ -51,8 +51,8 @@ export async function getUserAddress(
 ): Promise<[PublicKey, number]> {
   return await PublicKey.findProgramAddress(
     [
-      Buffer.from(userType === 0 ? VAULT_CTZN_USER_SEED : VAULT_ALIEN_USER_SEED), 
-      vault.toBuffer(), 
+      Buffer.from(userType === 0 ? VAULT_CTZN_USER_SEED : VAULT_ALIEN_USER_SEED),
+      vault.toBuffer(),
       authority.toBuffer()
     ],
     program.programId
@@ -67,8 +67,8 @@ export async function getStakeAddress(
 ): Promise<[PublicKey, number]> {
   return await PublicKey.findProgramAddress(
     [
-      Buffer.from(VAULT_STAKE_SEED), 
-      vault.toBuffer(), 
+      Buffer.from(VAULT_STAKE_SEED),
+      vault.toBuffer(),
       authority.toBuffer(),
       stakeAccount.toBuffer(),
     ],
@@ -155,20 +155,25 @@ export async function createVault(program: Program<NftStaking>): Promise<{
       process.env.NEXT_PUBLIC_VAULT_OWNER_SECRECT_KEY
     )
   );
-  const mint = await Mint.create(program, wallet);
   // create reward token
-  // const mint = new Mint(
-  //   new PublicKey(process.env.NEXT_PUBLIC_FLWR_MINT_ADDRESS),
-  //   null,
-  //   program
-  // );
+  let mint;
+  if (process.env.NEXT_PUBLIC_FLWR_MINT) {
+    mint = new Mint(
+      new PublicKey(process.env.NEXT_PUBLIC_FLWR_MINT),
+      null,
+      program
+    );
+  }
+  else {
+    mint = await Mint.create(program, wallet);
+  }
   console.log('mint', mint.key.toString());
   const tokenAccount = await mint.createAssociatedAccount(
     wallet.publicKey
   );
   await mint.mintTokens(tokenAccount, 1000000);
 
-  console.log('tokenAccount', tokenAccount.toString());
+  console.log('tokenAccount', toPublicKey(tokenAccount).toString());
   // create vault
   const { vault, authority } = await Vault.create({
     authority: wallet,

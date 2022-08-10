@@ -6,7 +6,8 @@ import { Program } from "@project-serum/anchor";
 import NftStaking from "../target/idl/nft_staking.json";
 import {
   createVault,
-  getRewardAddress
+  getRewardAddress,
+  getTokenAmounts
 } from '../fixtures/lib';
 import { Vault } from '../fixtures/vault';
 import { Mint } from '../fixtures/mint';
@@ -88,7 +89,7 @@ const AdminPanel = () => {
     alert("created successfully! vault key: ", vault.key.toString());
   }
 
-  const fundClick = async() => {
+  const handleFundClick = async() => {
     const { mint } = vault;
     const authority = Keypair.fromSecretKey(
       bs58.decode(
@@ -105,7 +106,9 @@ const AdminPanel = () => {
       funder.publicKey
     );
 
-    const amount = new anchor.BN("1000000");
+    const amount = await getTokenAmounts(program, funder.publicKey, funderAccount);
+    console.log(amount);
+    // const amount = new anchor.BN("1000000");
     await vault.fund({ 
       authority, 
       funder, 
@@ -117,7 +120,7 @@ const AdminPanel = () => {
   return (
     <>
       {address && <div>
-        <div className="fixed inset-0 flex items-center justify-center flex-col">
+        <div className="fixed inset-0 flex items-center justify-center flex-col gap-5">
 
           <button
             type="button"
@@ -127,6 +130,13 @@ const AdminPanel = () => {
             Create Vault
           </button>
 
+          <button
+            type="button"
+            onClick={handleFundClick}
+            className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+          >
+            Fund
+          </button>
         </div>
       </div>}
     </>
