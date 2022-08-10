@@ -202,7 +202,10 @@ export class Vault {
         funderAccount,
         tokenProgram: TOKEN_PROGRAM_ID,
       },
-      signers: [funder]
+      signers: [funder],
+      options: {
+        commitment: "confirmed"
+      }
     });
     return {
       sig: txSignature,
