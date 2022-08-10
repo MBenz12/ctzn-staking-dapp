@@ -3,8 +3,10 @@ import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { useEffect, useState } from 'react';
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
+import { bs58 } from '@project-serum/anchor/dist/cjs/utils/bytes';
 import NftStaking from "../target/idl/nft_staking.json";
 import {
+  checkTokenAccounts,
   createVault,
   getRewardAddress,
   getTokenAmounts
@@ -60,8 +62,9 @@ const AdminPanel = () => {
       const aliensPoolAccount = await mint.getAssociatedTokenAddress(aliensPool);
       const godsPoolAccount = await mint.getAssociatedTokenAddress(godsPool);
       setVault(new Vault(
-        vaultKey, 
-        mint.key, 
+        program,
+        vaultKey,
+        mint, 
         ctznsPool, 
         aliensPool, 
         godsPool, 
@@ -91,6 +94,7 @@ const AdminPanel = () => {
 
   const handleFundClick = async() => {
     const { mint } = vault;
+    console.log(vault);
     const authority = Keypair.fromSecretKey(
       bs58.decode(
         process.env.NEXT_PUBLIC_VAULT_OWNER_SECRECT_KEY
@@ -102,9 +106,13 @@ const AdminPanel = () => {
         process.env.NEXT_PUBLIC_FUNDER_SECRET_KEY
       )
     );
-    const funderAccount = await mint.createAssociatedAccount(
+    const funderAccount = await mint.getAssociatedTokenAddress(
       funder.publicKey
     );
+
+    if (await checkTokenAccounts(program, funder.publicKey, funderAccount) === false) {
+      await mint.createAssociatedAccount(funder.publicKey);
+    }
 
     const amount = await getTokenAmounts(program, funder.publicKey, funderAccount);
     console.log(amount);
@@ -113,7 +121,7 @@ const AdminPanel = () => {
       authority, 
       funder, 
       funderAccount: funderAccount.key, 
-      amount,
+      amount: new anchor.BN(amount)
     });
   }
 
