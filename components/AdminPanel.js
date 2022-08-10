@@ -76,6 +76,7 @@ const AdminPanel = () => {
         0,
         0
       ));
+      console.log("read vault");
     }
     if (process.env.NEXT_PUBLIC_VAULT_KEY && process.env.NEXT_PUBLIC_FLWR_MINT) createVault();
   }, []);

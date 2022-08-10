@@ -193,6 +193,7 @@ export class Vault {
   }): Promise<{
     sig: TransactionSignature;
   }> {
+    console.log(this.program);
     const txSignature = await this.program.rpc.fund(amount, {
       accounts: {
         funder: funder.publicKey,
