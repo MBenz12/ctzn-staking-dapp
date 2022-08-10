@@ -8,22 +8,18 @@ import NftStaking from "../target/idl/nft_staking.json";
 import {
   checkTokenAccounts,
   createVault,
-  getRewardAddress,
   getTokenAmounts,
+  getVault,
   toPublicKey
 } from '../fixtures/lib';
-import { Vault } from '../fixtures/vault';
-import { Mint } from '../fixtures/mint';
-import { Keypair, PublicKey } from '@solana/web3.js';
-
-const programId = "HES9CZTGAyJvpyHaVEAVxjfSHNw1wY27eeMZJBefFKgk";
+import { Keypair } from '@solana/web3.js';
 
 const AdminPanel = () => {
   const wallet = useWallet();
   const { connection } = useConnection();
   const provider = new anchor.AnchorProvider(connection, wallet);
   anchor.setProvider(provider);
-  const program = new Program(NftStaking, programId, provider);
+  const program = new Program(NftStaking, process.env.NEXT_PUBLIC_PROGRAM_ID, provider);
 
   const [address, setAddress] = useState(
     wallet.publicKey?.toString()
@@ -38,47 +34,9 @@ const AdminPanel = () => {
 
   useEffect(() => {
     const createVault = async () => {
-      const vaultKey = new PublicKey(process.env.NEXT_PUBLIC_VAULT_KEY);
-      const mint = new Mint(
-        new PublicKey(process.env.NEXT_PUBLIC_FLWR_MINT),
-        null,
-        program
-      );
-      const [ctznsPool] = await getRewardAddress(
-        vaultKey,
-        program,
-        0
-      );
-      const [aliensPool] = await getRewardAddress(
-        vaultKey,
-        program,
-        1
-      );
-      const [godsPool] = await getRewardAddress(
-        vaultKey,
-        program,
-        2
-      );
-      const ctznsPoolAccount = await mint.getAssociatedTokenAddress(ctznsPool);
-      const aliensPoolAccount = await mint.getAssociatedTokenAddress(aliensPool);
-      const godsPoolAccount = await mint.getAssociatedTokenAddress(godsPool);
-      setVault(new Vault(
-        program,
-        vaultKey,
-        mint, 
-        ctznsPool, 
-        aliensPool, 
-        godsPool, 
-        ctznsPoolAccount, 
-        aliensPoolAccount, 
-        godsPoolAccount, 
-        0,
-        0,
-        0
-      ));
-      console.log("read vault");
+      setVault(await getVault(program));
     }
-    if (process.env.NEXT_PUBLIC_VAULT_KEY && process.env.NEXT_PUBLIC_FLWR_MINT) createVault();
+    createVault();
   }, []);
 
   // useEffect(() => {

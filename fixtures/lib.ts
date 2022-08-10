@@ -187,3 +187,46 @@ export async function createVault(program: Program<NftStaking>): Promise<{
     vault,
   };
 }
+
+export async function getVault(program: Program<NftStaking>): Promise<Vault | null> {
+  if (!process.env.NEXT_PUBLIC_VAULT_KEY || !process.env.NEXT_PUBLIC_FLWR_MINT) return null;
+  
+  const vaultKey = new PublicKey(process.env.NEXT_PUBLIC_VAULT_KEY);
+  const mint = new Mint(
+    new PublicKey(process.env.NEXT_PUBLIC_FLWR_MINT),
+    null,
+    program
+  );
+  const [ctznsPool] = await getRewardAddress(
+    vaultKey,
+    program,
+    0
+  );
+  const [aliensPool] = await getRewardAddress(
+    vaultKey,
+    program,
+    1
+  );
+  const [godsPool] = await getRewardAddress(
+    vaultKey,
+    program,
+    2
+  );
+  const ctznsPoolAccount = await mint.getAssociatedTokenAddress(ctznsPool);
+  const aliensPoolAccount = await mint.getAssociatedTokenAddress(aliensPool);
+  const godsPoolAccount = await mint.getAssociatedTokenAddress(godsPool);
+  return new Vault(
+    program,
+    vaultKey,
+    mint,
+    ctznsPool,
+    aliensPool,
+    godsPool,
+    ctznsPoolAccount,
+    aliensPoolAccount,
+    godsPoolAccount,
+    0,
+    0,
+    0
+  );
+}
