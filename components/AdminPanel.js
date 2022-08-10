@@ -120,7 +120,7 @@ const AdminPanel = () => {
     await vault.fund({ 
       authority, 
       funder, 
-      funderAccount: funderAccount.key, 
+      funderAccount,
       amount: new anchor.BN(amount)
     });
   }
