@@ -163,7 +163,7 @@ export async function createVault(program: Program<NftStaking>): Promise<{
   //   program
   // );
   console.log('mint', mint.key.toString());
-  const tokenAccount = await mint.getAssociatedTokenAddress(
+  const tokenAccount = await mint.createAssociatedAccount(
     wallet.publicKey
   );
   await mint.mintTokens(tokenAccount, new anchor.BN("1000000"));
