@@ -117,7 +117,7 @@ const ShowNFTs = () => {
       console.log(userData);
       
     } catch (error) {
-      
+      console.log(error);
     }
   }
 
