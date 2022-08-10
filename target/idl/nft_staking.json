@@ -621,8 +621,5 @@
       "name": "CannotUnstakeAlien",
       "msg": "Cannot Unstake Alien untill 2 days reward accrued"
     }
-  ],
-  "metadata": {
-    "address": "HES9CZTGAyJvpyHaVEAVxjfSHNw1wY27eeMZJBefFKgk"
-  }
+  ]
 }
