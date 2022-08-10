@@ -111,8 +111,13 @@ const ShowNFTs = () => {
 
   const handleClickStakeCtzn = async () => {
     setStakeDialogOpen(false);
-    const userData = await vault.fetchUser(wallet.publicKey);
-    console.log(userData);
+    try {
+      const userData = await vault.fetchUser(wallet.publicKey);
+      console.log(userData);
+      
+    } catch (error) {
+      
+    }
   }
 
   return (
