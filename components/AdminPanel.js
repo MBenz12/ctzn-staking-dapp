@@ -3,7 +3,9 @@ import { useEffect, useState } from 'react';
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import NftStaking from "../target/idl/nft_staking.json";
-
+import {
+  createVault
+} from '../fixtures/lib';
 import { Keypair } from '@solana/web3.js';
 
 const programId = "HES9CZTGAyJvpyHaVEAVxjfSHNw1wY27eeMZJBefFKgk";
@@ -33,6 +35,8 @@ const AdminPanel = () => {
   // }, [address]);
 
   const handleCreateVaultClick = async () => {
+    const { vault } = await createVault(program);
+    console.log("vault key", vault.key.toString());
   }
 
   return (
