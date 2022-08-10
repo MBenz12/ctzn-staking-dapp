@@ -1,15 +1,32 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+import Image from 'next/image';
 import { Transition, Dialog } from '@headlessui/react';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { useState, useEffect } from 'react';
+import * as anchor from "@project-serum/anchor";
+import { Program } from "@project-serum/anchor";
+import NftStaking from "../target/idl/nft_staking.json";
 import { PublicKey } from '@solana/web3.js';
 import useMetaplex from '../hooks/useMetaplex';
 import styles from '../styles/Home.module.css'
+import {
+  checkTokenAccounts,
+  createVault,
+  getTokenAmounts,
+  getVault,
+  toPublicKey
+} from '../fixtures/lib';
 
 const candyMachine = "CUDGnANU3DEFcGEsppXwqjTD9nUFCFbBmrBUVjPfwPHb";
 // const candyMachine = "8XrvWo4ywz6kzN7cDekmAZYyfCP8ZMQHLaaqkxFp9vhH";
 
 const ShowNFTs = () => {
   const wallet = useWallet();
+  const { connection } = useConnection();
+  const provider = new anchor.AnchorProvider(connection, wallet);
+  anchor.setProvider(provider);
+  const program = new Program(NftStaking, process.env.NEXT_PUBLIC_PROGRAM_ID, provider);
+
   const { metaplex } = useMetaplex();
   const [address, setAddress] = useState(
     // wallet.publicKey?.toString()
@@ -27,11 +44,20 @@ const ShowNFTs = () => {
   const [aliens, setAliens] = useState([]);
   const [selectedNfts, setSelectedNfts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [vault, setVault] = useState();
+
 
   useEffect(() => {
     // setAddress(wallet.publicKey?.toString());
     setAddress("3qWq2ehELrVJrTg2JKKERm67cN6vYjm1EyhCEzfQ6jMd");
   }, [wallet]);
+
+  useEffect(() => {
+    const createVault = async () => {
+      setVault(await getVault(program));
+    }
+    createVault();
+  }, []);
 
   const fetchNFTs = async () => {
     try {
@@ -83,11 +109,17 @@ const ShowNFTs = () => {
     await Promise.all(promises);
   };
 
+  const handleClickStakeCtzn = async () => {
+    setStakeDialogOpen(false);
+    const userData = await vault.fetchUser(wallet.publicKey);
+    console.log(userData);
+  }
+
   return (
     <>
       {address && <div>
         {loading ? (
-          <img className={styles.loadingIcon} src="/loading.svg" />
+          <Image className={styles.loadingIcon} src="/loading.svg" alt="" />
         ) : <div className="fixed inset-0 flex items-center justify-center flex-col">
           {(!!ctzns.length || !!aliens.length) && <button
             type="button"
@@ -198,7 +230,7 @@ const ShowNFTs = () => {
                         <button
                           type="button"
                           className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                          onClick={() => setStakeDialogOpen(false)}
+                          onClick={handleClickStakeCtzn()}
                         >
                           Stake
                         </button>
@@ -224,7 +256,7 @@ const ShowNFTs = () => {
                               }}
                               className={`w-[120px] h-[120px] rounded-lg ${selectedNfts.includes(nft.mint) ? "border-2 border-red-400" : "border border-indigo-400"}`}
                             >
-                              <img
+                              <Image
                                 className="w-full h-full rounded-lg p-1"
                                 src={nft.metadata.image || '/fallbackImage.jpg'}
                                 alt="The downloaded illustration of the provided NFT address."
@@ -267,7 +299,7 @@ const ShowNFTs = () => {
                               }}
                               className={`w-[120px] h-[120px] rounded-lg ${selectedNfts.includes(nft.mint) ? "border-2 border-red-400" : "border border-indigo-400"}`}
                             >
-                              <img
+                              <Image
                                 className="w-full h-full rounded-lg p-1"
                                 src={nft.metadata.image || '/fallbackImage.jpg'}
                                 alt="The downloaded illustration of the provided NFT address."
@@ -339,7 +371,7 @@ const ShowNFTs = () => {
                               }}
                               className={`w-[120px] h-[120px] m-[5px] rounded-lg ${selectedNfts.includes(nft.mint) ? "border-2 border-red-400" : "border border-indigo-400"}`}
                             >
-                              <img
+                              <Image
                                 className="w-full h-full rounded-lg p-1"
                                 src={nft.metadata.image || '/fallbackImage.jpg'}
                                 alt="The downloaded illustration of the provided NFT address."
@@ -411,7 +443,7 @@ const ShowNFTs = () => {
                               }}
                               className={`w-[120px] h-[120px] m-[5px] rounded-lg ${selectedNfts.includes(nft.mint) ? "border-2 border-red-400" : "border border-indigo-400"}`}
                             >
-                              <img
+                              <Image
                                 className="w-full h-full rounded-lg p-1"
                                 src={nft.metadata.image || '/fallbackImage.jpg'}
                                 alt="The downloaded illustration of the provided NFT address."
