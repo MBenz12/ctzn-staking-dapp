@@ -9,7 +9,8 @@ import {
   checkTokenAccounts,
   createVault,
   getRewardAddress,
-  getTokenAmounts
+  getTokenAmounts,
+  toPublicKey
 } from '../fixtures/lib';
 import { Vault } from '../fixtures/vault';
 import { Mint } from '../fixtures/mint';
@@ -94,7 +95,6 @@ const AdminPanel = () => {
 
   const handleFundClick = async() => {
     const { mint } = vault;
-    console.log(vault);
     const authority = Keypair.fromSecretKey(
       bs58.decode(
         process.env.NEXT_PUBLIC_VAULT_OWNER_SECRECT_KEY
@@ -120,7 +120,7 @@ const AdminPanel = () => {
     await vault.fund({ 
       authority, 
       funder, 
-      funderAccount,
+      funderAccount: toPublicKey(funderAccount),
       amount: new anchor.BN(amount)
     });
   }
