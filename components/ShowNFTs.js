@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
 import Image from 'next/image';
 import { Transition, Dialog } from '@headlessui/react';
@@ -124,7 +125,7 @@ const ShowNFTs = () => {
     <>
       {address && <div>
         {loading ? (
-          <Image className={styles.loadingIcon} src="/loading.svg" alt="" />
+          <img className={styles.loadingIcon} src="/loading.svg" alt="" />
         ) : <div className="fixed inset-0 flex items-center justify-center flex-col">
           {(!!ctzns.length || !!aliens.length) && <button
             type="button"
@@ -261,7 +262,7 @@ const ShowNFTs = () => {
                               }}
                               className={`w-[120px] h-[120px] rounded-lg ${selectedNfts.includes(nft.mint) ? "border-2 border-red-400" : "border border-indigo-400"}`}
                             >
-                              <Image
+                              <img
                                 className="w-full h-full rounded-lg p-1"
                                 src={nft.metadata.image || '/fallbackImage.jpg'}
                                 alt="The downloaded illustration of the provided NFT address."
@@ -304,7 +305,7 @@ const ShowNFTs = () => {
                               }}
                               className={`w-[120px] h-[120px] rounded-lg ${selectedNfts.includes(nft.mint) ? "border-2 border-red-400" : "border border-indigo-400"}`}
                             >
-                              <Image
+                              <img
                                 className="w-full h-full rounded-lg p-1"
                                 src={nft.metadata.image || '/fallbackImage.jpg'}
                                 alt="The downloaded illustration of the provided NFT address."
@@ -376,7 +377,7 @@ const ShowNFTs = () => {
                               }}
                               className={`w-[120px] h-[120px] m-[5px] rounded-lg ${selectedNfts.includes(nft.mint) ? "border-2 border-red-400" : "border border-indigo-400"}`}
                             >
-                              <Image
+                              <img
                                 className="w-full h-full rounded-lg p-1"
                                 src={nft.metadata.image || '/fallbackImage.jpg'}
                                 alt="The downloaded illustration of the provided NFT address."
@@ -448,7 +449,7 @@ const ShowNFTs = () => {
                               }}
                               className={`w-[120px] h-[120px] m-[5px] rounded-lg ${selectedNfts.includes(nft.mint) ? "border-2 border-red-400" : "border border-indigo-400"}`}
                             >
-                              <Image
+                              <img
                                 className="w-full h-full rounded-lg p-1"
                                 src={nft.metadata.image || '/fallbackImage.jpg'}
                                 alt="The downloaded illustration of the provided NFT address."
