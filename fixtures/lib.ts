@@ -152,15 +152,16 @@ export async function createVault(program: Program<NftStaking>): Promise<{
 }> {
   const wallet = Keypair.fromSecretKey(
     bs58.decode(
-      "3mXQCTuJ6PDgDEztXaXjN4e7c6srWwhT8nvykUpUkcNUwzhXUfqWhN93gUyexErJAHeY2mTeRqDkrg3CCvweGjw1"
+      process.env.NEXT_PUBLIC_VAULT_OWNER_SECRECT_KEY
     )
   );
+  const mint = await Mint.create(program, wallet);
   // create reward token
-  const mint = new Mint(
-    new PublicKey("D6gMcJ7t8o7CtaaegcmE6iir6TFLUQq4poDftDcTxtFx"),
-    null,
-    program
-  );
+  // const mint = new Mint(
+  //   new PublicKey(process.env.NEXT_PUBLIC_FLWR_MINT_ADDRESS),
+  //   null,
+  //   program
+  // );
   console.log('mint', mint.key.toString());
   const tokenAccount = await mint.getAssociatedTokenAddress(
     wallet.publicKey

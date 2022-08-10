@@ -31,7 +31,7 @@ class Mint {
       authority, 
       authority.publicKey,
       freezeAuthority, 
-      0,
+      2,
     );
     console.log("Mint created successfully!");
     return new Mint(mint, authority, program);

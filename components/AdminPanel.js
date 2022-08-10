@@ -1,16 +1,17 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { useEffect, useState } from 'react';
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import NftStaking from "../target/idl/nft_staking.json";
 import {
-  createVault
+  createVault,
+  getRewardAddress
 } from '../fixtures/lib';
-import { Keypair } from '@solana/web3.js';
+import { Vault } from '../fixtures/vault';
+import { Keypair, PublicKey } from '@solana/web3.js';
 
 const programId = "HES9CZTGAyJvpyHaVEAVxjfSHNw1wY27eeMZJBefFKgk";
-
-
 
 const AdminPanel = () => {
   const wallet = useWallet();
@@ -24,9 +25,50 @@ const AdminPanel = () => {
   );
   const [loading, setLoading] = useState(false);
 
+  const [vault, setVault] = useState();
+
   useEffect(() => {
     setAddress(wallet.publicKey?.toString());
   }, [wallet]);
+
+  useEffect(() => {
+    const createVault = async () => {
+      const vaultKey = new PublicKey(process.env.NEXT_PUBLIC_VAULT_KEY);
+      const mint = new PublicKey(process.env.NEXT_PUBLIC_FLWR_MINT);
+      const [ctznsPool] = await getRewardAddress(
+        vaultKey,
+        program,
+        0
+      );
+      const [aliensPool] = await getRewardAddress(
+        vaultKey.publicKey,
+        program,
+        1
+      );
+      const [godsPool] = await getRewardAddress(
+        vaultKey.publicKey,
+        program,
+        2
+      );
+      const ctznsPoolAccount = await mint.getAssociatedTokenAddress(ctznsPool);
+      const aliensPoolAccount = await mint.getAssociatedTokenAddress(aliensPool);
+      const godsPoolAccount = await mint.getAssociatedTokenAddress(godsPool);
+      setVault(new Vault(
+        vaultKey, 
+        mint, 
+        ctznsPool, 
+        aliensPool, 
+        godsPool, 
+        ctznsPoolAccount, 
+        aliensPoolAccount, 
+        godsPoolAccount, 
+        0,
+        0,
+        0
+      ));
+    }
+    if (process.env.NEXT_PUBLIC_VAULT_KEY) createVault();
+  }, []);
 
   // useEffect(() => {
   //   if (!address) return;
@@ -36,7 +78,35 @@ const AdminPanel = () => {
 
   const handleCreateVaultClick = async () => {
     const { vault } = await createVault(program);
+    setVault(vault);
     console.log("vault key", vault.key.toString());
+    alert("created successfully! vault key: ", vault.key.toString());
+  }
+
+  const fundClick = async() => {
+    const { mint } = vault;
+    const authority = Keypair.fromSecretKey(
+      bs58.decode(
+        process.env.NEXT_PUBLIC_VAULT_OWNER_SECRECT_KEY
+      )
+    );
+    
+    const funder = Keypair.fromSecretKey(
+      bs58.decode(
+        process.env.NEXT_PUBLIC_FUNDER_SECRET_KEY
+      )
+    );
+    const funderAccount = await mint.createAssociatedAccount(
+      funder.publicKey
+    );
+
+    const amount = new anchor.BN("1000000");
+    await vault.fund({ 
+      authority, 
+      funder, 
+      funderAccount: funderAccount.key, 
+      amount,
+    });
   }
 
   return (
