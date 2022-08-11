@@ -95,7 +95,7 @@ export class Vault {
     const godsPoolAccount = await mint.getAssociatedTokenAddress(godsPool);
 
     let txSignature;
-    if (typeof authority === Keypair) {
+    if (typeof authority === typeof Keypair) {
       txSignature = await program.rpc.createVault(
         ctzns_pool_bump,
         aliens_pool_bump,
@@ -193,7 +193,7 @@ export class Vault {
     );
     let txSignature;
 
-    if (typeof authority === Keypair) {
+    if (typeof authority === typeof Keypair) {
       txSignature = await this.program.rpc.createUser(userType, {
         accounts: {
           authority: authority.publicKey,
@@ -239,7 +239,7 @@ export class Vault {
     sig: TransactionSignature;
   }> {
     let txSignature;
-    if (typeof funder === Keypair) {
+    if (typeof funder === typeof Keypair) {
       txSignature = await this.program.rpc.fund(amount, {
         accounts: {
           funder: funder.publicKey,

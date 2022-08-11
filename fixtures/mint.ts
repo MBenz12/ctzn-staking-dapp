@@ -40,7 +40,7 @@ class Mint {
     await spawnMoney(program, authority.publicKey, 1);
     console.log('request airdrop 1 sol ');
     let mint: anchor.web3.Keypair = anchor.web3.Keypair.generate();
-    if (typeof authority === anchor.web3.Keypair) {
+    if (typeof authority === typeof anchor.web3.Keypair) {
       mint = await createMint(
         program.provider.connection,
         authority,
@@ -78,7 +78,7 @@ class Mint {
     to: TokenAccount<T>,
     amount: number
   ) {
-    if (typeof this.authority === anchor.web3.Keypair) {
+    if (typeof this.authority === typeof anchor.web3.Keypair) {
       await mintTo(
         this.program.provider.connection,
         this.authority,
@@ -117,7 +117,7 @@ class Mint {
     T extends anchor.web3.PublicKey | anchor.web3.Keypair
   >(owner: T): Promise<TokenAccount<T>> {
     let tokenAccount;
-    if (typeof this.authority === anchor.web3.Keypair) {
+    if (typeof this.authority === typeof anchor.web3.Keypair) {
       tokenAccount = await createAssociatedTokenAccount(
         this.program.provider.connection,
         this.authority,
