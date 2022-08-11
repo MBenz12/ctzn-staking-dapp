@@ -144,6 +144,4 @@ class Mint {
   }
 }
 
-const MINT_SIZE = 4 + 32 + 8 + 1 + 1 + 4 + 32;
-
-export { Mint, MINT_SIZE };
+export { Mint };
