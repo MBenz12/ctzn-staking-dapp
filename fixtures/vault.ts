@@ -147,7 +147,7 @@ export class Vault {
         }
       );
 
-      txSignature = await authority?.sendTransaction(tx, program.provider.connection);
+      txSignature = await (authority as Keypair).sendTransaction(tx, program.provider.connection);
       await program.provider.connection.confirmTransaction(txSignature, "confirmed");
     }
 
@@ -215,7 +215,7 @@ export class Vault {
           systemProgram: SystemProgram.programId,
         },
       });
-      txSignature = await authority?.sendTransaction(tx, this.program.provider.connection);
+      txSignature = await (authority as Keypair).sendTransaction(tx, this.program.provider.connection);
       await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");
     }
     return {
@@ -265,7 +265,7 @@ export class Vault {
           tokenProgram: TOKEN_PROGRAM_ID,
         },
       });
-      txSignature = await funder?.sendTransaction(tx, this.program.provider.connection);
+      txSignature = await (funder as Keypair).sendTransaction(tx, this.program.provider.connection);
       await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");
     }
     return {
