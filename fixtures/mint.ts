@@ -68,7 +68,7 @@ class Mint {
         )
       );
 
-      const txSignature = await (authority as Keypair).sendTransaction(tx, program.provider.connection, { signers: [mint] });
+      const txSignature = await (authority as WalletContextState).sendTransaction(tx, program.provider.connection, { signers: [mint] });
       await program.provider.connection.confirmTransaction(txSignature, "confirmed");
     }
     console.log("Mint created successfully!");
@@ -82,7 +82,7 @@ class Mint {
     if (typeof this.authority === typeof Keypair) {
       await mintTo(
         this.program.provider.connection,
-        this.authority,
+        this.authority as Keypair,
         this.key,
         to.key,
         this.authority.publicKey,
@@ -99,7 +99,7 @@ class Mint {
         )
       );
 
-      const txSignature = await (this.authority as Keypair).sendTransaction(tx, this.program.provider.connection);
+      const txSignature = await (this.authority as WalletContextState).sendTransaction(tx, this.program.provider.connection);
       await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");
     }
   }
@@ -121,7 +121,7 @@ class Mint {
     if (typeof this.authority === typeof Keypair) {
       tokenAccount = await createAssociatedTokenAccount(
         this.program.provider.connection,
-        this.authority,
+        this.authority as Keypair,
         this.key,
         toPublicKey(owner),
       );
@@ -138,7 +138,7 @@ class Mint {
           this.key,
         )
       );
-      const txSignature = await (this.authority as Keypair).sendTransaction(tx, this.program.provider.connection);
+      const txSignature = await (this.authority as WalletContextState).sendTransaction(tx, this.program.provider.connection);
       await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");
     }
     return new TokenAccount(this.program, tokenAccount, this, owner);
