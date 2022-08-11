@@ -20,6 +20,7 @@ import {
 } from "./lib";
 import { TokenAccount } from "./token-account";
 import { NftStaking } from "../target/types/nft_staking";
+import { WalletContextState } from '@solana/wallet-adapter-react';
 
 const VAULT_STAKE_SEED = "vault_stake";
 export class Vault {
@@ -56,12 +57,12 @@ export class Vault {
     program,
     mint,
   }: {
-    authority?: Keypair;
+    authority?: Keypair | WalletContextState;
     vaultKey?: Keypair;
     program: anchor.Program<NftStaking>;
     mint: Mint;
   }): Promise<{
-    authority: Keypair;
+    authority: Keypair | WalletContextState;
     vault: Vault;
     sig: TransactionSignature;
   }> {
@@ -93,32 +94,63 @@ export class Vault {
     const aliensPoolAccount = await mint.getAssociatedTokenAddress(aliensPool);
     const godsPoolAccount = await mint.getAssociatedTokenAddress(godsPool);
 
-    const txSignature = await program.rpc.createVault(
-      ctzns_pool_bump,
-      aliens_pool_bump,
-      gods_pool_bump,
-      {
-        accounts: {
-          authority: authority.publicKey,
-          vault: vaultKey.publicKey,
-          rewardMint: mint.key,
-          ctznsPool,
-          aliensPool,
-          godsPool,
-          ctznsPoolAccount,
-          aliensPoolAccount,
-          godsPoolAccount,
-          rent: SYSVAR_RENT_PUBKEY,
-          tokenProgram: TOKEN_PROGRAM_ID,
-          associatedToken: ASSOCIATED_TOKEN_PROGRAM_ID,
-          systemProgram: SystemProgram.programId,
-        },
-        signers: [authority, vaultKey],
-        options: {
-          commitment: "confirmed"
-        },
-      }
-    );
+    let txSignature;
+    if (typeof authority === Keypair) {
+      txSignature = await program.rpc.createVault(
+        ctzns_pool_bump,
+        aliens_pool_bump,
+        gods_pool_bump,
+        {
+          accounts: {
+            authority: authority.publicKey,
+            vault: vaultKey.publicKey,
+            rewardMint: mint.key,
+            ctznsPool,
+            aliensPool,
+            godsPool,
+            ctznsPoolAccount,
+            aliensPoolAccount,
+            godsPoolAccount,
+            rent: SYSVAR_RENT_PUBKEY,
+            tokenProgram: TOKEN_PROGRAM_ID,
+            associatedToken: ASSOCIATED_TOKEN_PROGRAM_ID,
+            systemProgram: SystemProgram.programId,
+          },
+          signers: [authority, vaultKey],
+          options: {
+            commitment: "confirmed"
+          },
+        }
+      );
+    } else {
+      let tx = program.transaction.createVault(
+        ctzns_pool_bump,
+        aliens_pool_bump,
+        gods_pool_bump,
+        {
+          accounts: {
+            authority: authority.publicKey,
+            vault: vaultKey.publicKey,
+            rewardMint: mint.key,
+            ctznsPool,
+            aliensPool,
+            godsPool,
+            ctznsPoolAccount,
+            aliensPoolAccount,
+            godsPoolAccount,
+            rent: SYSVAR_RENT_PUBKEY,
+            tokenProgram: TOKEN_PROGRAM_ID,
+            associatedToken: ASSOCIATED_TOKEN_PROGRAM_ID,
+            systemProgram: SystemProgram.programId,
+          },
+          signers: [vaultKey],
+        }
+      );
+
+      txSignature = await authority.sendTransaction(tx, program.provider.connection);
+      await program.provider.connection.confirmTransaction(txSignature, "confirmed");
+    }
+
 
     console.log('Vault created successfully!', txSignature);
     return {
@@ -145,34 +177,47 @@ export class Vault {
     authority = Keypair.generate(),
     userType
   }: {
-    authority?: Keypair,
+    authority?: Keypair | WalletContextState,
     userType: number
   }): Promise<{
-    authority: Keypair;
+    authority: Keypair | WalletContextState;
     user: PublicKey;
     sig: TransactionSignature;
   }> {
-    await spawnMoney(this.program, authority.publicKey, 10);
+    await spawnMoney(this.program, authority.publicKey, 2);
     const [userAddress] = await getUserAddress(
       this.key,
       authority.publicKey,
       this.program,
       userType
     );
+    let txSignature;
 
-    const txSignature = await this.program.rpc.createUser(userType, {
-      accounts: {
-        authority: authority.publicKey,
-        vault: this.key,
-        user: userAddress,
-        systemProgram: SystemProgram.programId,
-      },
-      signers: [authority],
-      options: {
-        commitment: "confirmed",
-      },
-    });
-
+    if (typeof authority === Keypair) {
+      txSignature = await this.program.rpc.createUser(userType, {
+        accounts: {
+          authority: authority.publicKey,
+          vault: this.key,
+          user: userAddress,
+          systemProgram: SystemProgram.programId,
+        },
+        signers: [authority],
+        options: {
+          commitment: "confirmed",
+        },
+      });
+    } else {
+      let tx = await this.program.transaction.createUser(userType, {
+        accounts: {
+          authority: authority.publicKey,
+          vault: this.key,
+          user: userAddress,
+          systemProgram: SystemProgram.programId,
+        },
+      });
+      txSignature = await authority.sendTransaction(tx, this.program.provider.connection);
+      await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");
+    }
     return {
       authority,
       user: userAddress,
@@ -186,28 +231,43 @@ export class Vault {
     funderAccount,
     amount,
   }: {
-    authority: Keypair;
-    funder: Keypair;
+    authority: PublicKey;
+    funder: Keypair | WalletContextState;
     funderAccount: PublicKey;
     amount: anchor.BN;
   }): Promise<{
     sig: TransactionSignature;
   }> {
-    console.log(this.program);
-    const txSignature = await this.program.rpc.fund(amount, {
-      accounts: {
-        funder: funder.publicKey,
-        authority: authority.publicKey,
-        vault: this.key,
-        ctznsPoolAccount: this.ctznsPoolAccount,
-        funderAccount,
-        tokenProgram: TOKEN_PROGRAM_ID,
-      },
-      signers: [funder],
-      options: {
-        commitment: "confirmed"
-      }
-    });
+    let txSignature;
+    if (typeof funder === Keypair) {
+      txSignature = await this.program.rpc.fund(amount, {
+        accounts: {
+          funder: funder.publicKey,
+          authority,
+          vault: this.key,
+          ctznsPoolAccount: this.ctznsPoolAccount,
+          funderAccount,
+          tokenProgram: TOKEN_PROGRAM_ID,
+        },
+        signers: [funder],
+        options: {
+          commitment: "confirmed"
+        }
+      });
+    } else {
+      let tx = await this.program.transaction.fund(amount, {
+        accounts: {
+          funder: funder.publicKey,
+          authority,
+          vault: this.key,
+          ctznsPoolAccount: this.ctznsPoolAccount,
+          funderAccount,
+          tokenProgram: TOKEN_PROGRAM_ID,
+        },
+      });
+      txSignature = await funder.sendTransaction(tx, this.program.provider.connection);
+      await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");
+    }
     return {
       sig: txSignature,
     };

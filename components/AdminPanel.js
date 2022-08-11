@@ -46,7 +46,7 @@ const AdminPanel = () => {
   // }, [address]);
 
   const handleCreateVaultClick = async () => {
-    const { vault } = await createVault(program);
+    const { vault } = await createVault(program, wallet);
     setVault(vault);
     console.log("vault key", vault.key.toString());
     alert("created successfully! vault key: ", vault.key.toString());
@@ -54,31 +54,22 @@ const AdminPanel = () => {
 
   const handleFundClick = async() => {
     const { mint } = vault;
-    const authority = Keypair.fromSecretKey(
-      bs58.decode(
-        process.env.NEXT_PUBLIC_VAULT_OWNER_SECRECT_KEY
-      )
-    );
     
-    const funder = Keypair.fromSecretKey(
-      bs58.decode(
-        process.env.NEXT_PUBLIC_FUNDER_SECRET_KEY
-      )
-    );
+    
     const funderAccount = await mint.getAssociatedTokenAddress(
-      funder.publicKey
+      wallet.publicKey
     );
 
-    if (await checkTokenAccounts(program, funder.publicKey, funderAccount) === false) {
-      await mint.createAssociatedAccount(funder.publicKey);
+    if (await checkTokenAccounts(program, wallet.publicKey, funderAccount) === false) {
+      await mint.createAssociatedAccount(wallet.publicKey);
     }
 
-    const amount = await getTokenAmounts(program, funder.publicKey, funderAccount);
+    const amount = await getTokenAmounts(program, wallet.publicKey, funderAccount);
     console.log(amount);
     // const amount = new anchor.BN("1000000");
     await vault.fund({ 
-      authority, 
-      funder, 
+      wallet, 
+      wallet, 
       funderAccount: toPublicKey(funderAccount),
       amount: new anchor.BN(amount)
     });
