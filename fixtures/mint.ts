@@ -1,4 +1,3 @@
-import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import { NftStaking } from "../target/types/nft_staking";
 import { spawnMoney, toPublicKey } from "./lib";
@@ -20,31 +19,32 @@ import { WalletContextState } from '@solana/wallet-adapter-react';
 import {
   Transaction,
   SystemProgram,
-  PublicKey
+  PublicKey, 
+  Keypair
 } from "@solana/web3.js";
 
 class Mint {
   constructor(
-    public key: anchor.web3.PublicKey,
-    public authority: anchor.web3.Keypair | WalletContextState,
+    public key: PublicKey,
+    public authority: Keypair | WalletContextState,
     public program: Program<NftStaking>,
     public decimals: number
   ) { }
 
   static async create(
     program: Program<NftStaking>,
-    authority: anchor.web3.Keypair | WalletContextState = anchor.web3.Keypair.generate(),
-    freezeAuthority: anchor.web3.PublicKey | null = null,
+    authority: Keypair | WalletContextState = Keypair.generate(),
+    freezeAuthority: PublicKey | null = null,
     decimals: number = 2,
   ): Promise<Mint> {
     console.log("creating mint...");
     await spawnMoney(program, authority.publicKey, 1);
     console.log('request airdrop 1 sol ');
-    let mint: anchor.web3.Keypair | PublicKey = anchor.web3.Keypair.generate();
-    if (typeof authority === typeof anchor.web3.Keypair) {
+    let mint: Keypair | PublicKey = Keypair.generate();
+    if (typeof authority === typeof Keypair) {
       mint = await createMint(
         program.provider.connection,
-        authority as anchor.web3.Keypair,
+        authority as Keypair,
         authority.publicKey,
         freezeAuthority,
         decimals,
@@ -68,18 +68,18 @@ class Mint {
         )
       );
 
-      const txSignature = await authority.sendTransaction(tx, program.provider.connection, { signers: [mint] });
+      const txSignature = await authority?.sendTransaction(tx, program.provider.connection, { signers: [mint] });
       await program.provider.connection.confirmTransaction(txSignature, "confirmed");
     }
     console.log("Mint created successfully!");
     return new Mint(mint, authority, program, decimals);
   }
 
-  async mintTokens<T extends anchor.web3.PublicKey | anchor.web3.Keypair>(
+  async mintTokens<T extends PublicKey | Keypair>(
     to: TokenAccount<T>,
     amount: number
   ) {
-    if (typeof this.authority === typeof anchor.web3.Keypair) {
+    if (typeof this.authority === typeof Keypair) {
       await mintTo(
         this.program.provider.connection,
         this.authority,
@@ -99,14 +99,14 @@ class Mint {
         )
       );
 
-      const txSignature = await this.authority.sendTransaction(tx, this.program.provider.connection);
+      const txSignature = await this.authority?.sendTransaction(tx, this.program.provider.connection);
       await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");
     }
   }
 
   async getAssociatedTokenAddress<
-    T extends anchor.web3.PublicKey | anchor.web3.Keypair
-  >(owner: T): Promise<anchor.web3.PublicKey> {
+    T extends PublicKey | Keypair
+  >(owner: T): Promise<PublicKey> {
     return await getAssociatedTokenAddress(
       this.key,
       toPublicKey(owner),
@@ -115,10 +115,10 @@ class Mint {
   }
 
   async createAssociatedAccount<
-    T extends anchor.web3.PublicKey | anchor.web3.Keypair
+    T extends PublicKey | Keypair
   >(owner: T): Promise<TokenAccount<T>> {
     let tokenAccount;
-    if (typeof this.authority === typeof anchor.web3.Keypair) {
+    if (typeof this.authority === typeof Keypair) {
       tokenAccount = await createAssociatedTokenAccount(
         this.program.provider.connection,
         this.authority,
@@ -138,7 +138,7 @@ class Mint {
           this.key,
         )
       );
-      const txSignature = await this.authority.sendTransaction(tx, this.program.provider.connection);
+      const txSignature = await this.authority?.sendTransaction(tx, this.program.provider.connection);
       await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");
     }
     return new TokenAccount(this.program, tokenAccount, this, owner);
