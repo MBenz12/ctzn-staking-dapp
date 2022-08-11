@@ -49,6 +49,8 @@ class Mint {
         freezeAuthority,
         decimals,
       );
+      console.log("Mint created successfully!");
+      return new Mint(mint, authority, program, decimals);
     } else {
       let tx = new Transaction().add(
         // create mint account
@@ -70,9 +72,9 @@ class Mint {
 
       const txSignature = await (authority as WalletContextState).sendTransaction(tx, program.provider.connection, { signers: [mint] });
       await program.provider.connection.confirmTransaction(txSignature, "confirmed");
+      console.log("Mint created successfully!");
+      return new Mint(mint.publicKey, authority, program, decimals);
     }
-    console.log("Mint created successfully!");
-    return new Mint(mint, authority, program, decimals);
   }
 
   async mintTokens<T extends PublicKey | Keypair>(

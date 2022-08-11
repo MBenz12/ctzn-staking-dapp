@@ -249,7 +249,7 @@ export class Vault {
           funderAccount,
           tokenProgram: TOKEN_PROGRAM_ID,
         },
-        signers: [funder],
+        signers: [funder as Keypair],
         options: {
           commitment: "confirmed"
         }
@@ -273,7 +273,7 @@ export class Vault {
     };
   }
 
-  async stake(
+  /*async stake(
     itemType: number,
     curAuthoriy?: Keypair,
     curUser?: PublicKey,
@@ -434,7 +434,7 @@ export class Vault {
       signers: [claimer],
       // options: { commitment: "confirmed" },
     });
-  }
+  }*/
 }
 
 export type VaultStatus = {
