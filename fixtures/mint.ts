@@ -44,7 +44,7 @@ class Mint {
     if (typeof authority === typeof anchor.web3.Keypair) {
       mint = await createMint(
         program.provider.connection,
-        authority,
+        authority as anchor.web3.Keypair,
         authority.publicKey,
         freezeAuthority,
         decimals,
