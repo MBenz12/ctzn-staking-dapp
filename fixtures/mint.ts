@@ -20,6 +20,7 @@ import { WalletContextState } from '@solana/wallet-adapter-react';
 import {
   Transaction,
   SystemProgram,
+  PublicKey
 } from "@solana/web3.js";
 
 class Mint {
@@ -39,7 +40,7 @@ class Mint {
     console.log("creating mint...");
     await spawnMoney(program, authority.publicKey, 1);
     console.log('request airdrop 1 sol ');
-    let mint: anchor.web3.Keypair = anchor.web3.Keypair.generate();
+    let mint: anchor.web3.Keypair | PublicKey = anchor.web3.Keypair.generate();
     if (typeof authority === typeof anchor.web3.Keypair) {
       mint = await createMint(
         program.provider.connection,
