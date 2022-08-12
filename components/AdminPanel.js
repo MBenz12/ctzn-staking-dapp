@@ -73,6 +73,7 @@ const AdminPanel = () => {
       funderAccount,
       amount: new anchor.BN(amount)
     });
+    console.log("funded successfully!");
   }
 
   return (
