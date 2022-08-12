@@ -68,8 +68,8 @@ const AdminPanel = () => {
     console.log(amount);
     // const amount = new anchor.BN("1000000");
     await vault.fund({ 
-      wallet, 
-      wallet, 
+      authority: wallet.publicKey, 
+      funder: wallet, 
       funderAccount,
       amount: new anchor.BN(amount)
     });
