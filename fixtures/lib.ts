@@ -170,7 +170,7 @@ export async function createVault(program: Program<NftStaking>, wallet: WalletCo
   );
   await mint.mintTokens(tokenAccount, 1000000);
 
-  console.log('tokenAccount', toPublicKey(tokenAccount).toString());
+  console.log('tokenAccount', tokenAccount.key.toString());
   // create vault
   const { vault } = await Vault.create({
     authority: wallet,

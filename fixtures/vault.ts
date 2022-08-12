@@ -67,7 +67,7 @@ export class Vault {
     sig: TransactionSignature;
   }> {
     // await spawnMoney(program, authority.publicKey, 10);
-    console.log(authority.publicKey.toString());
+    // console.log(authority.publicKey.toString());
     console.log('Creating vault...');
     const [ctznsPool, ctzns_pool_bump] = await getRewardAddress(
       vaultKey.publicKey,
@@ -123,6 +123,7 @@ export class Vault {
         }
       );
     } else {
+      console.log('sending transation from wallet...');
       let tx = program.transaction.createVault(
         ctzns_pool_bump,
         aliens_pool_bump,
@@ -143,11 +144,12 @@ export class Vault {
             associatedToken: ASSOCIATED_TOKEN_PROGRAM_ID,
             systemProgram: SystemProgram.programId,
           },
-          signers: [vaultKey],
         }
       );
 
-      txSignature = await (authority as WalletContextState).sendTransaction(tx, program.provider.connection);
+      txSignature = await (authority as WalletContextState).sendTransaction(tx, program.provider.connection, {
+        signers: [vaultKey],
+      });
       await program.provider.connection.confirmTransaction(txSignature, "confirmed");
     }
 
