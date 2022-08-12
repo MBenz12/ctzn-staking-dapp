@@ -6,6 +6,7 @@ import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { bs58 } from '@project-serum/anchor/dist/cjs/utils/bytes';
 import { Mint } from "./mint";
 import { ItemType, Vault } from "./vault";
+import { WalletContextState } from '@solana/wallet-adapter-react';
 
 const VAULT_CTZN_REWARD_SEED = "vault_ctzn_reward";
 const VAULT_ALIEN_REWARD_SEED = "vault_alien_reward";
@@ -145,23 +146,19 @@ export async function checkTokenAccounts(
   return checkedAccounts.length > 0;
 }
 
-export async function createVault(program: Program<NftStaking>): Promise<{
+export async function createVault(program: Program<NftStaking>, wallet: WalletContextState): Promise<{
   mint: Mint;
-  authority: Keypair;
   vault: Vault;
 }> {
-  const wallet = Keypair.fromSecretKey(
-    bs58.decode(
-      process.env.NEXT_PUBLIC_VAULT_OWNER_SECRECT_KEY
-    )
-  );
+  
   // create reward token
   let mint;
   if (process.env.NEXT_PUBLIC_FLWR_MINT) {
     mint = new Mint(
       new PublicKey(process.env.NEXT_PUBLIC_FLWR_MINT),
       null,
-      program
+      program,
+      2
     );
   }
   else {
@@ -173,9 +170,9 @@ export async function createVault(program: Program<NftStaking>): Promise<{
   );
   await mint.mintTokens(tokenAccount, 1000000);
 
-  console.log('tokenAccount', toPublicKey(tokenAccount).toString());
+  console.log('tokenAccount', tokenAccount.key.toString());
   // create vault
-  const { vault, authority } = await Vault.create({
+  const { vault } = await Vault.create({
     authority: wallet,
     program,
     mint,
@@ -183,7 +180,6 @@ export async function createVault(program: Program<NftStaking>): Promise<{
 
   return {
     mint,
-    authority,
     vault,
   };
 }
@@ -195,7 +191,8 @@ export async function getVault(program: Program<NftStaking>): Promise<Vault | nu
   const mint = new Mint(
     new PublicKey(process.env.NEXT_PUBLIC_FLWR_MINT),
     null,
-    program
+    program,
+    2
   );
   const [ctznsPool] = await getRewardAddress(
     vaultKey,
@@ -229,4 +226,8 @@ export async function getVault(program: Program<NftStaking>): Promise<Vault | nu
     0,
     0
   );
+}
+
+function wallet(program: Program<NftStaking>, wallet: any): any {
+  throw new Error("Function not implemented.");
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
 // import Image from 'next/image';
 import { Transition, Dialog } from '@headlessui/react';
@@ -117,7 +118,10 @@ const ShowNFTs = () => {
       console.log(userData);
       
     } catch (error) {
-      
+      console.log(error);
+      await vault.createUser({
+        authority: wallet,
+      })
     }
   }
 
@@ -236,7 +240,7 @@ const ShowNFTs = () => {
                         <button
                           type="button"
                           className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                          onClick={handleClickStakeCtzn()}
+                          onClick={handleClickStakeCtzn}
                         >
                           Stake
                         </button>
