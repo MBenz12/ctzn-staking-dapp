@@ -87,18 +87,18 @@ const ShowNFTs = () => {
     }
   }, [address]);
 
-  // useEffect(() => {
-  //   if (!ctzns && !aliens) {
-  //     return;
-  //   }
+  useEffect(() => {
+    if (!ctzns && !aliens) {
+      return;
+    }
 
-  //   const execute = async () => {
-  //     await loadData(ctzns);
-  //     await loadData(aliens);
-  //     setLoading(false);
-  //   };
-  //   execute();
-  // }, [ctzns, aliens]);
+    const execute = async () => {
+      await loadData(ctzns);
+      await loadData(aliens);
+      setLoading(false);
+    };
+    execute();
+  }, [ctzns, aliens]);
 
   const loadData = async (nfts) => {
     const nftsToLoad = nfts.filter((nft) => {
