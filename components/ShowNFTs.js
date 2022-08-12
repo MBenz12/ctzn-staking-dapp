@@ -121,6 +121,7 @@ const ShowNFTs = () => {
       console.log(error);
       await vault.createUser({
         authority: wallet,
+        userType: 0,
       })
     }
   }
