@@ -14,6 +14,7 @@ import {
   checkTokenAccounts,
   createVault,
   getTokenAmounts,
+  getUserAddress,
   getVault,
   toPublicKey
 } from '../fixtures/lib';
@@ -114,7 +115,8 @@ const ShowNFTs = () => {
   const handleClickStakeCtzn = async () => {
     setStakeDialogOpen(false);
     try {
-      const userData = await vault.fetchUser(wallet.publicKey);
+      const userAddress = await getUserAddress(vault.key, wallet.publicKey, program, 0);
+      const userData = await vault.fetchUser(userAddress);
       console.log(userData);
       
     } catch (error) {
