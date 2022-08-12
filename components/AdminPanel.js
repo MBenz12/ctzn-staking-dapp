@@ -70,7 +70,7 @@ const AdminPanel = () => {
     await vault.fund({ 
       wallet, 
       wallet, 
-      funderAccount: toPublicKey(funderAccount),
+      funderAccount,
       amount: new anchor.BN(amount)
     });
   }
