@@ -284,7 +284,7 @@ export class Vault {
   ) {
 
     let txSignature;
-    let tx = this.program.transaction.stake(itemType, {
+    let tx = await this.program.transaction.stake(itemType, {
       accounts: {
         staker: curAuthoriy.publicKey,
         vault: this.key,
