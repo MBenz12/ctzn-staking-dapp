@@ -83,8 +83,11 @@ const ShowNFTs = () => {
         const alienUserData = await vault.fetchUser(alienUserAddress);
         console.log(alienUserData);
 
-        setStakedCtzns(list);
-        setStakedAliens(list);
+        const ctznMints = ctznUserData.map(storeItem => storeItem.mintAccount);
+        const alienMints = alienUserData.map(storeItem => storeItem.mintAccount)
+        
+        setStakedCtzns(await metaplex.nfts.findAllByMintList(ctznMints).run());
+        setStakedAliens(await metaplex.nfts.findAllByMintList(alienMints).run());
       }
     } catch (e) {
       console.error(e);
