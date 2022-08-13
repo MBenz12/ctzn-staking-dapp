@@ -180,6 +180,11 @@
           "isSigner": false
         },
         {
+          "name": "stakeMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "user",
           "isMut": true,
           "isSigner": false
@@ -517,6 +522,10 @@
         "kind": "struct",
         "fields": [
           {
+            "name": "mint",
+            "type": "publicKey"
+          },
+          {
             "name": "mintAccount",
             "type": "publicKey"
           },
@@ -621,5 +630,8 @@
       "name": "CannotUnstakeAlien",
       "msg": "Cannot Unstake Alien untill 2 days reward accrued"
     }
-  ]
+  ],
+  "metadata": {
+    "address": "HES9CZTGAyJvpyHaVEAVxjfSHNw1wY27eeMZJBefFKgk"
+  }
 }

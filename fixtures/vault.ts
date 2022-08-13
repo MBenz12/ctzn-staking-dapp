@@ -291,6 +291,7 @@ export class Vault {
         staker: curAuthoriy.publicKey,
         vault: this.key,
         stakeAccount,
+        stakeMint: mint.key,
         user: curUser,
         tokenProgram: TOKEN_PROGRAM_ID,
         systemProgram: SystemProgram.programId,
