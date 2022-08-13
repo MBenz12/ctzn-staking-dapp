@@ -284,6 +284,7 @@ export class Vault {
   ) {
     const mint = new Mint(nft, null, this.program, 0);
     const stakeAccount = mint.getAssociatedTokenAddress(curAuthoriy.publicKey);
+    console.log(stakeAccount.toString());
     let txSignature;
     let tx = await this.program.transaction.stake(itemType, {
       accounts: {
