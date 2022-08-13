@@ -124,7 +124,7 @@ const ShowNFTs = () => {
       console.log(selectedCtzns.map(nft => nft.toString()));
       for (const nft of selectedCtzns) {
         console.log(nft.toString());
-        await vault.stake(0, wallet, userAddress, nft);
+        await vault.stake(0, wallet, userAddress[0], nft);
       }
 
       fetchNFTs();
