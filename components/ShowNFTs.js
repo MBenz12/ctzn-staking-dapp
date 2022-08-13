@@ -72,19 +72,15 @@ const ShowNFTs = () => {
         nft.creators && nft.creators.filter(creator => creator.address.toString() === candyMachine).length && nft.name
       );
 
-      console.log(list);
-
       setCtzns(list.filter(nft => nft.symbol === "CTZN"));
       setAliens(list.filter(nft => nft.symbol !== "CTZN"));
 
       if (vault && wallet.publicKey) {
         const [ctznUserAddress] = await getUserAddress(vault.key, wallet.publicKey, program, 0);
         const ctznUserData = await vault.fetchUser(ctznUserAddress);
-        console.log(ctznUserData);
 
         const [alienUserAddress] = await getUserAddress(vault.key, wallet.publicKey, program, 1);
         const alienUserData = await vault.fetchUser(alienUserAddress);
-        console.log(alienUserData);
 
         const ctznMints = (ctznUserData?.items || []).map(storeItem => storeItem.mint);
         const alienMints = (alienUserData?.items || []).map(storeItem => storeItem.mint);
@@ -102,7 +98,6 @@ const ShowNFTs = () => {
 
   useEffect(() => {
     if (address && vault) {
-      console.log(address)
       fetchNFTs();
     }
   }, [address, vault]);
@@ -133,12 +128,11 @@ const ShowNFTs = () => {
     await Promise.all(promises);
   };
 
-  const handleClickStakeCtzn = async () => {
+  const handleClickStakeCtzn = async (all) => {
     setStakeDialogOpen(false);
     try {
       const [userAddress] = await getUserAddress(vault.key, wallet.publicKey, program, 0);
-      const userData = await vault.fetchUser(userAddress);
-      console.log(userData, userAddress.toString());
+      await vault.fetchUser(userAddress);
     } catch (error) {
       console.log(error);
       await vault.createUser({
@@ -147,34 +141,78 @@ const ShowNFTs = () => {
       });
     }
 
-    const selectedCtzns = selectedNfts.filter(mint => ctzns.filter(nft => nft.mint === mint).length);
+    let selectedCtzns;
+    if (all) {
+      selectedCtzns = ctzns.map(nft => nft.mint);
+    } else {
+      selectedCtzns = selectedNfts.filter(mint => ctzns.filter(nft => nft.mint === mint).length);
+    }
 
-    console.log(selectedCtzns.map(nft => nft.toString()));
     for (const nft of selectedCtzns) {
-      console.log(nft.toString());
       await vault.stake(0, wallet, userAddress, nft);
     }
 
     fetchNFTs();
   }
 
-  const handleClickStakeAllCtzn = async () => {
+  const handleClickStakeAlien = async (all) => {
     setStakeDialogOpen(false);
+    try {
+      const [userAddress] = await getUserAddress(vault.key, wallet.publicKey, program, 1);
+      await vault.fetchUser(userAddress);
+    } catch (error) {
+      console.log(error);
+      await vault.createUser({
+        authority: wallet,
+        userType: 1,
+      });
+    }
 
+    let selectedAliens;
+    if (all) {
+      selectedAliens = aliens.map(nft => nft.mint);
+    } else {
+      selectedAliens = selectedNfts.filter(mint => aliens.filter(nft => nft.mint === mint).length);
+    }
+
+    for (const nft of selectedAliens) {
+      await vault.stake(0, wallet, userAddress, nft);
+    }
+
+    fetchNFTs();
   }
 
-  const handleClickUnstakeCtzn = async () => {
+  const handleClickUnstakeCtzn = async (all) => {
     setStakeDialogOpen(false);
-    const [userAddress] = await getUserAddress(vault.key, wallet.publicKey, program, 0);
-    const userData = await vault.fetchUser(userAddress);
-    const selectedCtzns = selectedNfts.filter(mint => stakedCtzns.filter(nft => nft.mint === mint).length);
 
+    let selectedCtzns;
+    if (all) {
+      selectedCtzns = stakedCtzns.map(nft => nft.mint);
+    } else {
+      selectedCtzns = selectedNfts.filter(mint => stakedCtzns.filter(nft => nft.mint === mint).length);
+    }
 
-    console.log(selectedCtzns.map(nft => nft.toString()));
     for (const nft of selectedCtzns) {
-      const idx = stakedCtzns.indexOf(nft);
-      console.log(nft.toString(), ctznAccounts[idx].toString());
+      const idx = stakedCtzns.map(nft => nft.mint).indexOf(nft);
       await vault.unstake(wallet, userAddress, ctznAccounts[idx]);
+    }
+
+    fetchNFTs();
+  }
+
+  const handleClickUnstakeAlien = async (all) => {
+    setStakeDialogOpen(false);
+
+    let selectedAliens;
+    if (all) {
+      selectedAliens = stakedAliens.map(nft => nft.mint);
+    } else {
+      selectedAliens = selectedNfts.filter(mint => stakedAliens.filter(nft => nft.mint === mint).length);
+    }
+
+    for (const nft of selectedAliens) {
+      const idx = stakedAliens.map(nft => nft.mint).indexOf(nft);
+      await vault.unstake(wallet, userAddress, alienAccounts[idx]);
     }
 
     fetchNFTs();
@@ -302,7 +340,7 @@ const ShowNFTs = () => {
                         <button
                           type="button"
                           className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                          onClick={handleClickStakeAllCtzn}
+                          onClick={() => handleClickStakeCtzn(true)}
                         >
                           Stake All
                         </button>
@@ -338,14 +376,14 @@ const ShowNFTs = () => {
                         <button
                           type="button"
                           className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                          onClick={() => setStakeDialogOpen(false)}
+                          onClick={handleClickStakeAlien}
                         >
                           Stake
                         </button>
                         <button
                           type="button"
                           className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                          onClick={() => setStakeDialogOpen(false)}
+                          onClick={() => handleClickStakeAlien(true)}
                         >
                           Stake All
                         </button>
@@ -417,7 +455,7 @@ const ShowNFTs = () => {
                         <button
                           type="button"
                           className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                        // onClick={() => setStakeDialogOpen(false)}
+                          onClick={() => handleClickUnstakeCtzn(true)}
                         >
                           Un-stake All
                         </button>
@@ -482,14 +520,14 @@ const ShowNFTs = () => {
                         <button
                           type="button"
                           className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                        // onClick={() => setStakeDialogOpen(false)}
+                          onClick={handleClickUnstakeAlien}
                         >
                           Un-stake
                         </button>
                         <button
                           type="button"
                           className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                        // onClick={() => setStakeDialogOpen(false)}
+                          onClick={() => handleClickUnstakeAlien(true)}
                         >
                           Un-stake All
                         </button>
