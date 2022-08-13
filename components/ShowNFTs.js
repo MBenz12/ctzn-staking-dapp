@@ -119,11 +119,7 @@ const ShowNFTs = () => {
       const userData = await vault.fetchUser(userAddress);
       console.log(userData);
       
-      console.log(ctzns.map(nft => nft.mint.toString()));
-      console.log(selectedNfts.map(nft => nft.mint.toString()));
-
-      const selectedCtzns = ctzns.filter(nft => selectedNfts.filter(selectedNft => 
-        nft.mint.toString() === selectedNft.mint.toString()).length).map(nft => nft.mint);
+      const selectedCtzns = selectedNfts.filter(mint => ctzns.filter(nft => nft.mint === mint).length);
       
       console.log(selectedCtzns.map(nft => nft.toString()));
       for (const nft of selectedCtzns) {
