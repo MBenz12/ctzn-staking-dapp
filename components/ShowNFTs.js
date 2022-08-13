@@ -57,6 +57,7 @@ const ShowNFTs = () => {
   useEffect(() => {
     const createVault = async () => {
       setVault(await getVault(program));
+      fetchNFTs();
     }
     createVault();
   }, []);
