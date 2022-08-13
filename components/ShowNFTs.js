@@ -74,6 +74,10 @@ const ShowNFTs = () => {
       setCtzns(list.filter(nft => nft.symbol === "CTZN"));
       setAliens(list.filter(nft => nft.symbol !== "CTZN"));
 
+      const ctznUserAddress = await getUserAddress(vault.key, wallet.publicKey, program, 0);
+      const ctznUserData = await vault.fetchUser(ctznUserAddress);
+      console.log(ctznUserData);
+
       setStakedCtzns(list);
       setStakedAliens(list);
     } catch (e) {
