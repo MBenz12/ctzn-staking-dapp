@@ -317,35 +317,52 @@ export class Vault {
 
     // return { userAuthority: curAuthoriy, user: curUser, stakeAccount: nft, stakeMint };
   }
+
+  async unstake(
+    authority: WalletContextState,
+    user: PublicKey,
+    stakeAccount: PublicKey,
+  ): Promise<boolean> {
+    const [vaultPda, vaultStakeBump] = await getStakeAddress(
+      this.key,
+      authority.publicKey,
+      stakeAccount,
+      this.program
+    );
+
+
+    let txSignature;
+    let tx = await this.program.transaction.unstake(vaultStakeBump, {
+      accounts: {
+        staker: authority.publicKey,
+        vault: this.key,
+        unstakeAccount: stakeAccount,
+        vaultPda,
+        user,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        systemProgram: SystemProgram.programId,
+      }
+    });
+
+    txSignature = await authority.sendTransaction(tx, this.program.provider.connection);
+    await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");
+
+    // await this.program.rpc.unstake(vaultStakeBump, {
+    //   accounts: {
+    //     staker: authority.publicKey,
+    //     vault: this.key,
+    //     unstakeAccount: stakeAccount.key,
+    //     vaultPda,
+    //     user,
+    //     tokenProgram: TOKEN_PROGRAM_ID,
+    //     systemProgram: SystemProgram.programId,
+    //   },
+    //   signers: [authority],
+    //   options: { commitment: "confirmed" },
+    // });
+    return true;
+  }
   /*
-    async unstake(
-      authority: Keypair,
-      user: PublicKey,
-      stakeAccount: TokenAccount<PublicKey>,
-    ): Promise<boolean> {
-      const [vaultPda, vaultStakeBump] = await getStakeAddress(
-        this.key,
-        authority.publicKey,
-        stakeAccount.key,
-        this.program
-      );
-  
-      await this.program.rpc.unstake(vaultStakeBump, {
-        accounts: {
-          staker: authority.publicKey,
-          vault: this.key,
-          unstakeAccount: stakeAccount.key,
-          vaultPda,
-          user,
-          tokenProgram: TOKEN_PROGRAM_ID,
-          systemProgram: SystemProgram.programId,
-        },
-        signers: [authority],
-        options: { commitment: "confirmed" },
-      });
-      return true;
-    }
-  
     async getRewardAmount(
       user: PublicKey,
     ): Promise<number> {

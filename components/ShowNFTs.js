@@ -42,6 +42,8 @@ const ShowNFTs = () => {
   const [alienDialogOpen, setAlienDialogOpen] = useState(false);
   const [stakedCtzns, setStakedCtzns] = useState([]);
   const [stakedAliens, setStakedAliens] = useState([]);
+  const [ctznAccounts, setCtznAccounts] = useState([]);
+  const [alienAccounts, setAlienAccounts] = useState([]);
   const [ctzns, setCtzns] = useState([]);
   const [aliens, setAliens] = useState([]);
   const [selectedNfts, setSelectedNfts] = useState([]);
@@ -86,9 +88,12 @@ const ShowNFTs = () => {
 
         const ctznMints = (ctznUserData?.items || []).map(storeItem => storeItem.mint);
         const alienMints = (alienUserData?.items || []).map(storeItem => storeItem.mint);
-        
+
         setStakedCtzns(await metaplex.nfts().findAllByMintList(ctznMints));
         setStakedAliens(await metaplex.nfts().findAllByMintList(alienMints));
+
+        setCtznAccounts((ctznUserData?.items || []).map(storeItem => storeItem.mintAccount));
+        setAlienAccounts((alienUserData?.items || []).map(storeItem => storeItem.mintAccount));
       }
     } catch (e) {
       console.error(e);
@@ -103,7 +108,7 @@ const ShowNFTs = () => {
   }, [address, vault]);
 
   useEffect(() => {
-    if (!ctzns || !aliens || !stakedCtzns || !stakedAliens) {
+    if (!ctzns && !aliens && !stakedCtzns && !stakedAliens) {
       return;
     }
 
@@ -134,28 +139,45 @@ const ShowNFTs = () => {
       const [userAddress] = await getUserAddress(vault.key, wallet.publicKey, program, 0);
       const userData = await vault.fetchUser(userAddress);
       console.log(userData, userAddress.toString());
-
-      const selectedCtzns = selectedNfts.filter(mint => ctzns.filter(nft => nft.mint === mint).length);
-
-      console.log(selectedCtzns.map(nft => nft.toString()));
-      for (const nft of selectedCtzns) {
-        console.log(nft.toString());
-        await vault.stake(0, wallet, userAddress, nft);
-      }
-
-      fetchNFTs();
     } catch (error) {
       console.log(error);
       await vault.createUser({
         authority: wallet,
         userType: 0,
-      })
+      });
     }
+
+    const selectedCtzns = selectedNfts.filter(mint => ctzns.filter(nft => nft.mint === mint).length);
+
+    console.log(selectedCtzns.map(nft => nft.toString()));
+    for (const nft of selectedCtzns) {
+      console.log(nft.toString());
+      await vault.stake(0, wallet, userAddress, nft);
+    }
+
+    fetchNFTs();
   }
 
   const handleClickStakeAllCtzn = async () => {
     setStakeDialogOpen(false);
 
+  }
+
+  const handleClickUnstakeCtzn = async () => {
+    setStakeDialogOpen(false);
+    const [userAddress] = await getUserAddress(vault.key, wallet.publicKey, program, 0);
+    const userData = await vault.fetchUser(userAddress);
+    const selectedCtzns = selectedNfts.filter(mint => stakedCtzns.filter(nft => nft.mint === mint).length);
+
+
+    console.log(selectedCtzns.map(nft => nft.toString()));
+    for (const nft of selectedCtzns) {
+      const idx = stakedCtzns.indexOf(nft);
+      console.log(nft.toString(), ctznAccounts[idx].toString());
+      await vault.unstake(wallet, userAddress, ctznAccounts[idx]);
+    }
+
+    fetchNFTs();
   }
 
   return (
@@ -388,7 +410,7 @@ const ShowNFTs = () => {
                         <button
                           type="button"
                           className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                        // onClick={() => setStakeDialogOpen(false)}
+                          onClick={handleClickUnstakeCtzn}
                         >
                           Un-stake
                         </button>
