@@ -289,7 +289,7 @@ export class Vault {
       accounts: {
         staker: curAuthoriy.publicKey,
         vault: this.key,
-        stakeAccount: nft,
+        stakeAccount,
         user: curUser,
         tokenProgram: TOKEN_PROGRAM_ID,
         systemProgram: SystemProgram.programId,
