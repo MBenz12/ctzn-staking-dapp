@@ -87,8 +87,8 @@ const ShowNFTs = () => {
         const ctznMints = (ctznUserData?.items || []).map(storeItem => storeItem.mint);
         const alienMints = (alienUserData?.items || []).map(storeItem => storeItem.mint);
         
-        setStakedCtzns(await metaplex.nfts().findAllByMintList(ctznMints).run());
-        setStakedAliens(await metaplex.nfts().findAllByMintList(alienMints).run());
+        setStakedCtzns(await metaplex.nfts().findAllByMintList(ctznMints));
+        setStakedAliens(await metaplex.nfts().findAllByMintList(alienMints));
       }
     } catch (e) {
       console.error(e);
@@ -103,17 +103,19 @@ const ShowNFTs = () => {
   }, [address, vault]);
 
   useEffect(() => {
-    if (!ctzns && !aliens) {
+    if (!ctzns || !aliens || !stakedCtzns || !stakedAliens) {
       return;
     }
 
     const execute = async () => {
       await loadData(ctzns);
       await loadData(aliens);
+      await loadData(stakedCtzns);
+      await loadData(stakedAliens);
       setLoading(false);
     };
     execute();
-  }, [ctzns, aliens]);
+  }, [ctzns, aliens, stakedCtzns, stakedAliens]);
 
   const loadData = async (nfts) => {
     const nftsToLoad = nfts.filter((nft) => {
