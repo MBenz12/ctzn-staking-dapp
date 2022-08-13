@@ -119,6 +119,15 @@ const ShowNFTs = () => {
       const userData = await vault.fetchUser(userAddress);
       console.log(userData);
       
+
+      const selectedCtzns = ctzns.filter(nft => selectedNfts.filter(selectedNft => 
+        nft.mint === selectedNft.mint).length).map(nft => nft.mint);
+      
+      for (const nft of selectedCtzns) {
+        await vault.stake(0, wallet, userAddress, nft);
+      }
+
+      fetchNFTs();
     } catch (error) {
       console.log(error);
       await vault.createUser({
@@ -126,6 +135,11 @@ const ShowNFTs = () => {
         userType: 0,
       })
     }
+  }
+
+  const handleClickStakeAllCtzn = async () => {
+    setStakeDialogOpen(false);
+
   }
 
   return (
@@ -250,7 +264,7 @@ const ShowNFTs = () => {
                         <button
                           type="button"
                           className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                          onClick={() => setStakeDialogOpen(false)}
+                          onClick={handleClickStakeAllCtzn}
                         >
                           Stake All
                         </button>

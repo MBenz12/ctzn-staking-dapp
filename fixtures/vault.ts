@@ -21,6 +21,7 @@ import {
 import { TokenAccount } from "./token-account";
 import { NftStaking } from "../target/types/nft_staking";
 import { WalletContextState } from '@solana/wallet-adapter-react';
+import { Transaction } from "@solana/web3.js";
 
 const VAULT_STAKE_SEED = "vault_stake";
 export class Vault {
@@ -186,7 +187,7 @@ export class Vault {
     user: PublicKey;
     sig: TransactionSignature;
   }> {
-    await spawnMoney(this.program, authority.publicKey, 2);
+    // await spawnMoney(this.program, authority.publicKey, 2);
     const [userAddress] = await getUserAddress(
       this.key,
       authority.publicKey,
@@ -275,168 +276,161 @@ export class Vault {
     };
   }
 
-  /*async stake(
+  async stake(
     itemType: number,
-    curAuthoriy?: Keypair,
-    curUser?: PublicKey,
-  ): Promise<{
-    userAuthority: Keypair;
-    user: PublicKey;
-    stakeAccount: TokenAccount<PublicKey>;
-    stakeMint: Mint;
-  }> {
-    let userAuthority: Keypair;
-    let user: PublicKey;
-    if (!curUser) {
-      // create user
-      const { authority, user: created } = await this.createUser({ userType: itemType == 0 ? 0 : 1 })
-      userAuthority = authority;
-      user = created;
-    } else {
-      userAuthority = curAuthoriy;
-      user = curUser;
+    curAuthoriy: WalletContextState,
+    curUser: PublicKey,
+    nft: PublicKey,
+  ) {
+
+    let txSignature;
+    let tx = this.program.transaction.stake(itemType, {
+      accounts: {
+        staker: curAuthoriy.publicKey,
+        vault: this.key,
+        stakeAccount: nft,
+        user: curUser,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        systemProgram: SystemProgram.programId,
+      }
+    });
+
+    txSignature = await curAuthoriy.sendTransaction(tx, this.program.provider.connection);
+    await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");
+
+    // // stake
+    // await this.program.rpc.stake(itemType, {
+    //   accounts: {
+    //     staker: userAuthority.publicKey,
+    //     vault: this.key,
+    //     stakeAccount: stakeAccount.key,
+    //     user,
+    //     tokenProgram: TOKEN_PROGRAM_ID,
+    //     systemProgram: SystemProgram.programId,
+    //   },
+    //   signers: [userAuthority],
+    //   options: { commitment: "confirmed" },
+    // });
+
+    // return { userAuthority: curAuthoriy, user: curUser, stakeAccount: nft, stakeMint };
+  }
+  /*
+    async unstake(
+      authority: Keypair,
+      user: PublicKey,
+      stakeAccount: TokenAccount<PublicKey>,
+    ): Promise<boolean> {
+      const [vaultPda, vaultStakeBump] = await getStakeAddress(
+        this.key,
+        authority.publicKey,
+        stakeAccount.key,
+        this.program
+      );
+  
+      await this.program.rpc.unstake(vaultStakeBump, {
+        accounts: {
+          staker: authority.publicKey,
+          vault: this.key,
+          unstakeAccount: stakeAccount.key,
+          vaultPda,
+          user,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          systemProgram: SystemProgram.programId,
+        },
+        signers: [authority],
+        options: { commitment: "confirmed" },
+      });
+      return true;
     }
-
-    // create a token to be staked and its account of userAuthority
-    const stakeMint = await Mint.create(this.program);
-    const stakeAccount = await stakeMint.createAssociatedAccount(
-      userAuthority.publicKey
-    );
-    await stakeMint.mintTokens(stakeAccount, 1);
-
-    // stake
-    await this.program.rpc.stake(itemType, {
-      accounts: {
-        staker: userAuthority.publicKey,
-        vault: this.key,
-        stakeAccount: stakeAccount.key,
-        user,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: SystemProgram.programId,
-      },
-      signers: [userAuthority],
-      options: { commitment: "confirmed" },
-    });
-
-    return { userAuthority, user, stakeAccount, stakeMint };
-  }
-
-  async unstake(
-    authority: Keypair,
-    user: PublicKey,
-    stakeAccount: TokenAccount<PublicKey>,
-  ): Promise<boolean> {
-    const [vaultPda, vaultStakeBump] = await getStakeAddress(
-      this.key,
-      authority.publicKey,
-      stakeAccount.key,
-      this.program
-    );
-
-    await this.program.rpc.unstake(vaultStakeBump, {
-      accounts: {
-        staker: authority.publicKey,
-        vault: this.key,
-        unstakeAccount: stakeAccount.key,
-        vaultPda,
-        user,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: SystemProgram.programId,
-      },
-      signers: [authority],
-      options: { commitment: "confirmed" },
-    });
-    return true;
-  }
-
-  async getRewardAmount(
-    user: PublicKey,
-  ): Promise<number> {
-    const now = await getBlockTime(this.program);
-    const userData = await this.fetchUser(user);
-    let total = 0;
-    userData.items.forEach(item => {
-      total = total + item.earnedReward.toNumber() + (now - item.lastClaimedTime.toNumber()) * 36;
-      // console.log(item.lastClaimedTime.toNumber());
-    });
-    return total;
-  }
-
-  async claim(claimer: Keypair, user: PublicKey, userType: number) {
-    const claimerAccount = await this.mint.getAssociatedTokenAddress(
-      claimer.publicKey
-    );
-    const [ctznsPool] = await getRewardAddress(
-      this.key,
-      this.program,
-      0
-    );
-
-    const [aliensPool] = await getRewardAddress(
-      this.key,
-      this.program,
-      1
-    );
-
-    const [godsPool] = await getRewardAddress(
-      this.key,
-      this.program,
-      2
-    );
-
-    const ctznsPoolAccount = await this.mint.getAssociatedTokenAddress(ctznsPool);
-    const aliensPoolAccount = await this.mint.getAssociatedTokenAddress(aliensPool);
-    const godsPoolAccount = await this.mint.getAssociatedTokenAddress(godsPool);
-    await this.program.rpc.claim(userType, {
-      accounts: {
-        claimer: claimer.publicKey,
-        vault: this.key,
-        ctznsPool,
-        aliensPool,
-        godsPool,
-        rewardMint: this.mint.key,
-        ctznsPoolAccount,
-        aliensPoolAccount,
-        godsPoolAccount,
-        claimerAccount,
-        user,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        rent: SYSVAR_RENT_PUBKEY,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: SystemProgram.programId,
-      },
-      signers: [claimer],
-      options: { commitment: "confirmed" },
-    });
-  }
-
-  async withdraw(claimer: Keypair, amount: anchor.BN) {
-    const claimerAccount = await this.mint.getAssociatedTokenAddress(
-      claimer.publicKey
-    );
-    const [ctznsPool] = await getRewardAddress(
-      this.key,
-      this.program,
-      0
-    );
-    const ctznsPoolAccount = await this.mint.getAssociatedTokenAddress(ctznsPool);
-    await this.program.rpc.withdraw(amount, {
-      accounts: {
-        claimer: claimer.publicKey,
-        vault: this.key,
-        ctznsPool,
-        rewardMint: this.mint.key,
-        ctznsPoolAccount,
-        claimerAccount,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        rent: SYSVAR_RENT_PUBKEY,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: SystemProgram.programId,
-      },
-      signers: [claimer],
-      // options: { commitment: "confirmed" },
-    });
-  }*/
+  
+    async getRewardAmount(
+      user: PublicKey,
+    ): Promise<number> {
+      const now = await getBlockTime(this.program);
+      const userData = await this.fetchUser(user);
+      let total = 0;
+      userData.items.forEach(item => {
+        total = total + item.earnedReward.toNumber() + (now - item.lastClaimedTime.toNumber()) * 36;
+        // console.log(item.lastClaimedTime.toNumber());
+      });
+      return total;
+    }
+  
+    async claim(claimer: Keypair, user: PublicKey, userType: number) {
+      const claimerAccount = await this.mint.getAssociatedTokenAddress(
+        claimer.publicKey
+      );
+      const [ctznsPool] = await getRewardAddress(
+        this.key,
+        this.program,
+        0
+      );
+  
+      const [aliensPool] = await getRewardAddress(
+        this.key,
+        this.program,
+        1
+      );
+  
+      const [godsPool] = await getRewardAddress(
+        this.key,
+        this.program,
+        2
+      );
+  
+      const ctznsPoolAccount = await this.mint.getAssociatedTokenAddress(ctznsPool);
+      const aliensPoolAccount = await this.mint.getAssociatedTokenAddress(aliensPool);
+      const godsPoolAccount = await this.mint.getAssociatedTokenAddress(godsPool);
+      await this.program.rpc.claim(userType, {
+        accounts: {
+          claimer: claimer.publicKey,
+          vault: this.key,
+          ctznsPool,
+          aliensPool,
+          godsPool,
+          rewardMint: this.mint.key,
+          ctznsPoolAccount,
+          aliensPoolAccount,
+          godsPoolAccount,
+          claimerAccount,
+          user,
+          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+          rent: SYSVAR_RENT_PUBKEY,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          systemProgram: SystemProgram.programId,
+        },
+        signers: [claimer],
+        options: { commitment: "confirmed" },
+      });
+    }
+  
+    async withdraw(claimer: Keypair, amount: anchor.BN) {
+      const claimerAccount = await this.mint.getAssociatedTokenAddress(
+        claimer.publicKey
+      );
+      const [ctznsPool] = await getRewardAddress(
+        this.key,
+        this.program,
+        0
+      );
+      const ctznsPoolAccount = await this.mint.getAssociatedTokenAddress(ctznsPool);
+      await this.program.rpc.withdraw(amount, {
+        accounts: {
+          claimer: claimer.publicKey,
+          vault: this.key,
+          ctznsPool,
+          rewardMint: this.mint.key,
+          ctznsPoolAccount,
+          claimerAccount,
+          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+          rent: SYSVAR_RENT_PUBKEY,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          systemProgram: SystemProgram.programId,
+        },
+        signers: [claimer],
+        // options: { commitment: "confirmed" },
+      });
+    }*/
 }
 
 export type VaultStatus = {
