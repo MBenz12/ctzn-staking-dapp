@@ -124,6 +124,7 @@ const ShowNFTs = () => {
         nft.mint === selectedNft.mint).length).map(nft => nft.mint);
       
       for (const nft of selectedCtzns) {
+        console.log(nft);
         await vault.stake(0, wallet, userAddress, nft);
       }
 
