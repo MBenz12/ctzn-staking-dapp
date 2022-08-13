@@ -117,13 +117,13 @@ const ShowNFTs = () => {
     try {
       const userAddress = await getUserAddress(vault.key, wallet.publicKey, program, 0);
       const userData = await vault.fetchUser(userAddress);
-      console.log(userData);
+      console.log(userData, userAddress.toString());
       
       const selectedCtzns = selectedNfts.filter(mint => ctzns.filter(nft => nft.mint === mint).length);
       
       console.log(selectedCtzns.map(nft => nft.toString()));
       for (const nft of selectedCtzns) {
-        console.log(nft);
+        console.log(nft.toString());
         await vault.stake(0, wallet, userAddress, nft);
       }
 
