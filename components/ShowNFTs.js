@@ -74,7 +74,7 @@ const ShowNFTs = () => {
       setCtzns(list.filter(nft => nft.symbol === "CTZN"));
       setAliens(list.filter(nft => nft.symbol !== "CTZN"));
 
-      if (vault) {
+      if (vault && wallet) {
         const [ctznUserAddress] = await getUserAddress(vault.key, wallet.publicKey, program, 0);
         const ctznUserData = await vault.fetchUser(ctznUserAddress);
         console.log(ctznUserData);
@@ -83,11 +83,11 @@ const ShowNFTs = () => {
         const alienUserData = await vault.fetchUser(alienUserAddress);
         console.log(alienUserData);
 
-        const ctznMints = ctznUserData.map(storeItem => storeItem.mintAccount);
-        const alienMints = alienUserData.map(storeItem => storeItem.mintAccount)
+        const ctznMints = (ctznUserData?.items || []).map(storeItem => storeItem.mint);
+        const alienMints = (alienUserData?.items || []).map(storeItem => storeItem.mint);
         
-        setStakedCtzns(await metaplex.nfts.findAllByMintList(ctznMints).run());
-        setStakedAliens(await metaplex.nfts.findAllByMintList(alienMints).run());
+        setStakedCtzns(await metaplex.nfts().findAllByMintList(ctznMints).run());
+        setStakedAliens(await metaplex.nfts().findAllByMintList(alienMints).run());
       }
     } catch (e) {
       console.error(e);
