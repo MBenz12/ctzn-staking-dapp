@@ -180,6 +180,11 @@ export type NftStaking = {
           "isSigner": false
         },
         {
+          "name": "stakeMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "user",
           "isMut": true,
           "isSigner": false
@@ -516,6 +521,10 @@ export type NftStaking = {
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "mint",
+            "type": "publicKey"
+          },
           {
             "name": "mintAccount",
             "type": "publicKey"
@@ -806,6 +815,11 @@ export const IDL: NftStaking = {
           "isSigner": false
         },
         {
+          "name": "stakeMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "user",
           "isMut": true,
           "isSigner": false
@@ -1142,6 +1156,10 @@ export const IDL: NftStaking = {
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "mint",
+            "type": "publicKey"
+          },
           {
             "name": "mintAccount",
             "type": "publicKey"
