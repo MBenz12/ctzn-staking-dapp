@@ -130,9 +130,15 @@ const ShowNFTs = () => {
 
   const handleClickStakeCtzn = async (all) => {
     setStakeDialogOpen(false);
+    const [userAddress] = await getUserAddress(vault.key, wallet.publicKey, program, 0);
     try {
-      const [userAddress] = await getUserAddress(vault.key, wallet.publicKey, program, 0);
-      await vault.fetchUser(userAddress);
+      const userData = await vault.fetchUser(userAddress, 0);
+      if (!userData) {
+        await vault.createUser({
+          authority: wallet,
+          userType: 0,
+        });
+      }
     } catch (error) {
       console.log(error);
       await vault.createUser({
@@ -157,9 +163,15 @@ const ShowNFTs = () => {
 
   const handleClickStakeAlien = async (all) => {
     setStakeDialogOpen(false);
+    const [userAddress] = await getUserAddress(vault.key, wallet.publicKey, program, 1);
     try {
-      const [userAddress] = await getUserAddress(vault.key, wallet.publicKey, program, 1);
-      await vault.fetchUser(userAddress);
+      const userData = await vault.fetchUser(userAddress, 1);
+      if (!userData) {
+        await vault.createUser({
+          authority: wallet,
+          userType: 1,
+        });
+      }
     } catch (error) {
       console.log(error);
       await vault.createUser({
@@ -176,7 +188,7 @@ const ShowNFTs = () => {
     }
 
     for (const nft of selectedAliens) {
-      await vault.stake(0, wallet, userAddress, nft);
+      await vault.stake(1, wallet, userAddress, nft);
     }
 
     fetchNFTs();
@@ -184,6 +196,7 @@ const ShowNFTs = () => {
 
   const handleClickUnstakeCtzn = async (all) => {
     setStakeDialogOpen(false);
+    const [userAddress] = await getUserAddress(vault.key, wallet.publicKey, program, 0);
 
     let selectedCtzns;
     if (all) {
@@ -202,6 +215,7 @@ const ShowNFTs = () => {
 
   const handleClickUnstakeAlien = async (all) => {
     setStakeDialogOpen(false);
+    const [userAddress] = await getUserAddress(vault.key, wallet.publicKey, program, 1);
 
     let selectedAliens;
     if (all) {
@@ -333,7 +347,7 @@ const ShowNFTs = () => {
                         <button
                           type="button"
                           className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                          onClick={handleClickStakeCtzn}
+                          onClick={() => handleClickStakeCtzn(false)}
                         >
                           Stake
                         </button>
@@ -376,7 +390,7 @@ const ShowNFTs = () => {
                         <button
                           type="button"
                           className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                          onClick={handleClickStakeAlien}
+                          onClick={() => handleClickStakeAlien(false)}
                         >
                           Stake
                         </button>
@@ -448,7 +462,7 @@ const ShowNFTs = () => {
                         <button
                           type="button"
                           className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                          onClick={handleClickUnstakeCtzn}
+                          onClick={() => handleClickUnstakeCtzn(false)}
                         >
                           Un-stake
                         </button>
@@ -520,7 +534,7 @@ const ShowNFTs = () => {
                         <button
                           type="button"
                           className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                          onClick={handleClickUnstakeAlien}
+                          onClick={() => handleClickUnstakeAlien(false)}
                         >
                           Un-stake
                         </button>
