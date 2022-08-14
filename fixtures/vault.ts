@@ -280,23 +280,30 @@ export class Vault {
     itemType: number,
     curAuthoriy: WalletContextState,
     curUser: PublicKey,
-    nft: PublicKey,
+    nfts: PublicKey[],
   ) {
-    const mint = new Mint(nft, null, this.program, 0);
-    const stakeAccount = await mint.getAssociatedTokenAddress(curAuthoriy.publicKey);
-    console.log(stakeAccount.toString());
-    let txSignature;
-    let tx = await this.program.transaction.stake(itemType, {
-      accounts: {
-        staker: curAuthoriy.publicKey,
-        vault: this.key,
-        stakeAccount,
-        stakeMint: mint.key,
-        user: curUser,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: SystemProgram.programId,
+    let txSignature, tx;
+    for (const nft of nfts) {
+      const mint = new Mint(nft, null, this.program, 0);
+      const stakeAccount = await mint.getAssociatedTokenAddress(curAuthoriy.publicKey);
+      console.log(stakeAccount.toString());
+
+      const oneTx = await this.program.transaction.stake(itemType, {
+        accounts: {
+          staker: curAuthoriy.publicKey,
+          vault: this.key,
+          stakeAccount,
+          stakeMint: mint.key,
+          user: curUser,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          systemProgram: SystemProgram.programId,
+        }
+      });
+      if (!tx) { tx = oneTx; }
+      else {
+        tx.instructions = tx.instructions.concat(oneTx.instructions);
       }
-    });
+    }
 
     txSignature = await curAuthoriy.sendTransaction(tx, this.program.provider.connection);
     await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");

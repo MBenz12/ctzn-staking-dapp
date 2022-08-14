@@ -154,9 +154,7 @@ const ShowNFTs = () => {
       selectedCtzns = selectedNfts.filter(mint => ctzns.filter(nft => nft.mint === mint).length);
     }
 
-    for (const nft of selectedCtzns) {
-      await vault.stake(0, wallet, userAddress, nft);
-    }
+    await vault.stake(0, wallet, userAddress, selectedCtzns);
 
     fetchNFTs();
   }
