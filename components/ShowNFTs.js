@@ -30,13 +30,6 @@ const ShowNFTs = () => {
   const program = new Program(NftStaking, process.env.NEXT_PUBLIC_PROGRAM_ID, provider);
 
   const { metaplex } = useMetaplex();
-  const [address, setAddress] = useState(
-    // wallet.publicKey?.toString()
-    "3qWq2ehELrVJrTg2JKKERm67cN6vYjm1EyhCEzfQ6jMd"
-    // "7FKaZcmr6WRQPAqFQXYFNgF5St2RPZt8ay47hLBho84G"
-    // "85tJUsy1J6TYxxCMKR24owFuMyTeKtM1eWbbcVjLtSq2"
-    // "2iLBgrVgknFo53D8wrdWY86o1HEXUJsZs8mjYk8J37X2"
-  );
   const [stakeDialogOpen, setStakeDialogOpen] = useState(false);
   const [ctznDialogOpen, setCtznDialogOpen] = useState(false);
   const [alienDialogOpen, setAlienDialogOpen] = useState(false);
@@ -50,16 +43,9 @@ const ShowNFTs = () => {
   const [loading, setLoading] = useState(false);
   const [vault, setVault] = useState();
 
-
-  useEffect(() => {
-    // setAddress(wallet.publicKey?.toString());
-    setAddress("3qWq2ehELrVJrTg2JKKERm67cN6vYjm1EyhCEzfQ6jMd");
-  }, [wallet]);
-
   useEffect(() => {
     const createVault = async () => {
       setVault(await getVault(program));
-      fetchNFTs();
     }
     createVault();
   }, []);
@@ -68,7 +54,7 @@ const ShowNFTs = () => {
     try {
       setLoading(true);
 
-      const list = await (await metaplex.nfts().findAllByOwner(new PublicKey(address))).filter(nft =>
+      const list = await (await metaplex.nfts().findAllByOwner(new PublicKey(wallet.publicKey))).filter(nft =>
         nft.creators && nft.creators.filter(creator => creator.address.toString() === candyMachine).length && nft.name
       );
 
@@ -97,10 +83,10 @@ const ShowNFTs = () => {
   };
 
   useEffect(() => {
-    if (address && vault) {
+    if (wallet.publicKey && vault) {
       fetchNFTs();
     }
-  }, [address, vault]);
+  }, [wallet.publicKey, vault]);
 
   useEffect(() => {
     if (!ctzns && !aliens && !stakedCtzns && !stakedAliens) {
@@ -129,7 +115,6 @@ const ShowNFTs = () => {
   };
 
   const handleClickStakeCtzn = async (all) => {
-    setStakeDialogOpen(false);
     const [userAddress] = await getUserAddress(vault.key, wallet.publicKey, program, 0);
     try {
       const userData = await vault.fetchUser(userAddress, 0);
@@ -157,10 +142,10 @@ const ShowNFTs = () => {
     await vault.stake(0, wallet, userAddress, selectedCtzns);
 
     fetchNFTs();
+    setStakeDialogOpen(false);
   }
 
   const handleClickStakeAlien = async (all) => {
-    setStakeDialogOpen(false);
     const [userAddress] = await getUserAddress(vault.key, wallet.publicKey, program, 1);
     try {
       const userData = await vault.fetchUser(userAddress, 1);
@@ -188,10 +173,12 @@ const ShowNFTs = () => {
     await vault.stake(1, wallet, userAddress, selectedAliens);
 
     fetchNFTs();
+    setStakeDialogOpen(false);
   }
 
   const handleClickUnstakeCtzn = async (all) => {
-    setStakeDialogOpen(false);
+    if (!stakedCtzns.length) return;
+    
     const [userAddress] = await getUserAddress(vault.key, wallet.publicKey, program, 0);
 
     let selectedCtzns;
@@ -210,10 +197,12 @@ const ShowNFTs = () => {
     await vault.unstake(wallet, userAddress, stakeAccounts);
 
     fetchNFTs();
+    setCtznDialogOpen(false);
   }
 
   const handleClickUnstakeAlien = async (all) => {
-    setStakeDialogOpen(false);
+    if (!stakedAliens.length) return;
+
     const [userAddress] = await getUserAddress(vault.key, wallet.publicKey, program, 1);
 
     let selectedAliens;
@@ -224,18 +213,19 @@ const ShowNFTs = () => {
     }
 
     const stakeAccounts = [];
-    for (const nft of selectedCtzns) {
+    for (const nft of selectedAliens) {
       const idx = stakedAliens.map(nft => nft.mint).indexOf(nft);
       stakeAccounts.push(alienAccounts[idx]);
     }
     await vault.unstake(wallet, userAddress, stakeAccounts);
 
     fetchNFTs();
+    setAlienDialogOpen(false);
   }
 
   return (
     <>
-      {address && <div>
+      {wallet.publicKey && <div>
         {loading ? (
           <img className={styles.loadingIcon} src="/loading.svg" alt="" />
         ) : <div className="fixed inset-0 flex items-center justify-center flex-col">
@@ -274,6 +264,8 @@ const ShowNFTs = () => {
                 <button
                   type="button"
                   onClick={() => {
+                    if (!stakedCtzns.length) return;
+
                     setCtznDialogOpen(true);
                     setSelectedNfts([]);
                   }}
@@ -306,6 +298,8 @@ const ShowNFTs = () => {
                 <button
                   type="button"
                   onClick={() => {
+                    if (!stakedAliens.length) return;
+
                     setAlienDialogOpen(true);
                     setSelectedNfts([]);
                   }}
