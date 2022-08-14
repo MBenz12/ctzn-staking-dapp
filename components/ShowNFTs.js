@@ -185,9 +185,7 @@ const ShowNFTs = () => {
       selectedAliens = selectedNfts.filter(mint => aliens.filter(nft => nft.mint === mint).length);
     }
 
-    for (const nft of selectedAliens) {
-      await vault.stake(1, wallet, userAddress, nft);
-    }
+    await vault.stake(1, wallet, userAddress, selectedAliens);
 
     fetchNFTs();
   }
@@ -203,10 +201,13 @@ const ShowNFTs = () => {
       selectedCtzns = selectedNfts.filter(mint => stakedCtzns.filter(nft => nft.mint === mint).length);
     }
 
+
+    const stakeAccounts = [];
     for (const nft of selectedCtzns) {
       const idx = stakedCtzns.map(nft => nft.mint).indexOf(nft);
-      await vault.unstake(wallet, userAddress, ctznAccounts[idx]);
+      stakeAccounts.push(ctznAccounts[idx]);
     }
+    await vault.unstake(wallet, userAddress, stakeAccounts);
 
     fetchNFTs();
   }
@@ -222,10 +223,12 @@ const ShowNFTs = () => {
       selectedAliens = selectedNfts.filter(mint => stakedAliens.filter(nft => nft.mint === mint).length);
     }
 
-    for (const nft of selectedAliens) {
+    const stakeAccounts = [];
+    for (const nft of selectedCtzns) {
       const idx = stakedAliens.map(nft => nft.mint).indexOf(nft);
-      await vault.unstake(wallet, userAddress, alienAccounts[idx]);
+      stakeAccounts.push(alienAccounts[idx]);
     }
+    await vault.unstake(wallet, userAddress, stakeAccounts);
 
     fetchNFTs();
   }

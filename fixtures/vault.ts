@@ -328,28 +328,35 @@ export class Vault {
   async unstake(
     authority: WalletContextState,
     user: PublicKey,
-    stakeAccount: PublicKey,
+    stakeAccounts: PublicKey[],
   ): Promise<boolean> {
-    const [vaultPda, vaultStakeBump] = await getStakeAddress(
-      this.key,
-      authority.publicKey,
-      stakeAccount,
-      this.program
-    );
-
-
-    let txSignature;
-    let tx = await this.program.transaction.unstake(vaultStakeBump, {
-      accounts: {
-        staker: authority.publicKey,
-        vault: this.key,
-        unstakeAccount: stakeAccount,
-        vaultPda,
-        user,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: SystemProgram.programId,
+    let txSignature, tx;
+    for (const stakeAccount of stakeAccounts) {
+      const [vaultPda, vaultStakeBump] = await getStakeAddress(
+        this.key,
+        authority.publicKey,
+        stakeAccount,
+        this.program
+      );
+  
+      const oneTx = await this.program.transaction.unstake(vaultStakeBump, {
+        accounts: {
+          staker: authority.publicKey,
+          vault: this.key,
+          unstakeAccount: stakeAccount,
+          vaultPda,
+          user,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          systemProgram: SystemProgram.programId,
+        }
+      });
+      
+      if (!tx) { tx = oneTx; }
+      else {
+        tx.instructions = tx.instructions.concat(oneTx.instructions);
       }
-    });
+    }
+    
 
     txSignature = await authority.sendTransaction(tx, this.program.provider.connection);
     await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");
