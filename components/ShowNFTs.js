@@ -233,7 +233,7 @@ const ShowNFTs = () => {
             setStakeDialogOpen(true);
             setSelectedNfts([]);
           }}
-          className="h-[80px] sm:w-[400px] w-[300px] rounded-[10px] bg-[#b11fff] hover:bg-[#a10fef] active:bg-[#b11fff] sm:text-[50px] text-[40px] text-white"
+          className="h-[80px] sm:w-[400px] w-[300px] rounded-[10px] bg-[#b11fff] hover:bg-[#a10fef] active:bg-[#b11fff] sm:text-[50px] text- text-white"
         >
           PLAY NOW
         </button>
