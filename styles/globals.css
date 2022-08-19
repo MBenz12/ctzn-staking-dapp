@@ -1,27 +1,22 @@
 @tailwind base;
 @tailwind components;
+@font-face {
+  font-family: 'Pixellium v0z9';
+  src: url(../assets/fonts/Pixellium-v0Z9.ttf);
+}
 @tailwind utilities;
 
-html,
 body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-* {
-  box-sizing: border-box;
+  font-family: 'Pixellium v0z9', sans-serif;
+  font-size: 40px;
+  background-image: url(../assets/galaxy\ .png);
+  background-size: contain;
+  min-height: 100%;
+  background-position: 0px 0px;
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  @apply h-2 w-2;
 }
 
 ::-webkit-scrollbar-track {

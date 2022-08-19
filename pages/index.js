@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import styles from '../styles/Home.module.css'
 import { useMemo, useState } from 'react';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
@@ -56,10 +57,25 @@ export default function Home() {
           <WalletModalProvider>
             <MetaplexProvider>
               <div className={styles.App}>
-                <div className="z-50">
-                  <WalletMultiButton />
+                <div className="h-[150px] bg-black/[0.52] flex items-center">
+                  <div className="flex justify-between container mx-auto max-w-[940px] relative">
+                    <a href='#'>
+                      <img 
+                        src='/777CTZNS_LOGO.png'
+                        width={150}                        
+                        alt=''
+                      ></img>
+                    </a>
+                    <nav className="text-white flex items-center gap-10">
+                      <a>BUY</a>
+                      <a>WHITEPAPER</a>
+                      <div className="z-50">
+                        <WalletMultiButton />
+                      </div>
+                    </nav>
+                  </div>
                 </div>
-                {<ShowNFTs />}
+                <ShowNFTs />
               </div>
             </MetaplexProvider>
           </WalletModalProvider>

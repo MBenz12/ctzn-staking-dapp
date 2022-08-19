@@ -14,10 +14,17 @@ export default async function handler(req, res) {
     for (const addr of mints) {
         const mint = new PublicKey(addr);
         const nft = await metaplex.nfts().findByMint(mint);
-        writeFile(`metadata/${i}.json`, JSON.stringify(nft.metadata), (err) => {
+        const obj = {};
+        obj.name = nft.name;
+        obj.symbol = nft.symbol;
+        obj.uri = nft.uri;
+        obj.seller_fee_basis_points = nft.sellerFeeBasisPoints;
+        obj.creators = nft.creators;
+        writeFile(`metadata/${i}.json`, JSON.stringify(obj), (err) => {
             if (err) throw err;
             console.log("success");
         });
+        
         i++;
         await sleep(1000);
     }

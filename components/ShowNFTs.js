@@ -18,7 +18,6 @@ import {
   getVault,
   toPublicKey
 } from '../fixtures/lib';
-
 const candyMachine = "CUDGnANU3DEFcGEsppXwqjTD9nUFCFbBmrBUVjPfwPHb";
 // const candyMachine = "8XrvWo4ywz6kzN7cDekmAZYyfCP8ZMQHLaaqkxFp9vhH";
 
@@ -225,20 +224,112 @@ const ShowNFTs = () => {
 
   return (
     <>
-      {wallet.publicKey && <div>
-        {loading ? (
-          <img className={styles.loadingIcon} src="/loading.svg" alt="" />
-        ) : <div className="fixed inset-0 flex items-center justify-center flex-col">
-          {(!!ctzns.length || !!aliens.length) && <button
-            type="button"
-            onClick={() => {
-              setStakeDialogOpen(true);
-              setSelectedNfts([]);
-            }}
-            className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-          >
-            Play Now
-          </button>}
+    <div className="">
+      <div className="mt-[80px] flex justify-center">
+        <button
+          type="button"
+          onClick={() => {
+            if (!ctzns.length && !aliens.length) return;
+            setStakeDialogOpen(true);
+            setSelectedNfts([]);
+          }}
+          className="h-[80px] w-[400px] rounded-[10px] bg-[#b11fff] hover:bg-[#a10fef] active:bg-[#b11fff] text-[50px] text-white"
+        >
+          PLAY NOW
+        </button>
+      </div>
+      <div className="mt-[100px] flex justify-center gap-[40px] flex-wrap md:flex-nowrap">
+        <div className="w-[800px] h-[1000px] bg-black/[0.58] border-[5px] rounded-[10px] border-[#5200B5]/[0.58] p-[10px]">
+          <div className="mt-[60px] flex justify-center">
+            <img 
+              src='./ctzns.png'
+              alt=''
+              width={500}
+            >  
+            </img>
+          </div>
+          <div className="mt-[40px] flex justify-center">
+            <div className="w-[300px] h-[300px] rounded-[10px] bg-white/[0.5]">
+              
+            </div>
+          </div>
+          <div className="mt-[60px] text-white  grid grid-cols-2">
+            <div className='text-center text-[50px]'>TOTAL STAKED</div>
+            <div className='text-center text-[50px]'>$FLWRS YIELDED</div>
+            <div className='text-center text-[75px]'>{stakedCtzns.length}</div>
+            <div className='text-center text-[75px]'>5,000</div>
+          </div>
+          <div className="mt-[60px] grid grid-cols-2">
+            <div className="flex justify-center">
+              <button
+                className="h-[80px] w-[290px] rounded-[10px] bg-[#ffa91e] hover:bg-[#ef990e] active:bg-[#ffa91e] text-[38px] text-white"
+              >
+                HARVEST FLWRS
+              </button>
+            </div>
+            <div className="flex justify-center">
+              <button
+                onClick={() => {
+                  if (!stakedCtzns.length) return;
+
+                  setCtznDialogOpen(true);
+                  setSelectedNfts([]);
+                }}
+                className="h-[80px] w-[290px] rounded-[10px] bg-[#c7061d] hover:bg-[#d7000d] active:bg-[#c7061d] text-[38px] text-white"
+              >
+                UN-STAKE CTZNS
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="w-[800px] h-[1000px] bg-black/[0.58] border-[5px] rounded-[10px] border-[#5200B5]/[0.58] p-[10px]">
+        <div className="mt-[60px] flex justify-center">
+            <img 
+              src='./aliens.png'
+              alt=''
+              width={500}
+            >  
+            </img>
+          </div>
+          <div className="mt-[40px] flex justify-center">
+            <div className="w-[300px] h-[300px] rounded-[10px] bg-white/[0.5]">
+              
+            </div>
+          </div>
+          <div className="mt-[60px] text-white  grid grid-cols-2">
+            <div className='text-center text-[50px]'>TOTAL STAKED</div>
+            <div className='text-center text-[50px]'>$FLWRS YIELDED</div>
+            <div className='text-center text-[75px]'>{stakedAliens.length}</div>
+            <div className='text-center text-[75px]'>5,000</div>
+          </div>
+          <div className="mt-[60px] grid grid-cols-2">
+            <div className="flex justify-center">
+              <button
+                className="h-[80px] w-[290px] rounded-[10px] bg-[#ffa91e] hover:bg-[#ef990e] active:bg-[#ffa91e] text-[38px] text-white"
+              >
+                HARVEST FLWRS
+              </button>
+            </div>
+            <div className="flex justify-center">
+              <button
+                onClick={() => {
+                  if (!stakedAliens.length) return;
+
+                  setAlienDialogOpen(true);
+                  setSelectedNfts([]);
+                }}
+                className="h-[80px] w-[290px] rounded-[10px] bg-[#551cff] hover:bg-[#450cef] active:bg-[#551cff] text-[38px] text-white"
+              >
+                UN-STAKE ALIENS
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    {/* <div className="fixed inset-0 flex items-center justify-center flex-col">
+          
 
           <div className="mt-4 flex justify-center space-x-4">
             <div className="border-2 border-indigo-600 p-4 w-[400px] h-[400px] flex items-center flex-col">
@@ -310,7 +401,11 @@ const ShowNFTs = () => {
               </div>
             </div>
           </div>
-        </div>}
+        </div> */}
+      {wallet.publicKey && <div>
+        {/* {loading ? (
+          <img className={styles.loadingIcon} src="/loading.svg" alt="" />
+        ) : } */}
 
         <Transition appear show={stakeDialogOpen}>
           <Dialog as="div" className="relative z-10" onClose={() => setStakeDialogOpen(false)}>
