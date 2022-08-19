@@ -18,6 +18,8 @@ import {
 import '@solana/wallet-adapter-react-ui/styles.css';
 import MetaplexProvider from '../context/MetaplexProvider';
 import ShowNFTs from '../components/ShowNFTs';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faBars } from '@fortawesome/free-solid-svg-icons'
 
 export default function Home() {
   // const handleChange = (event) => {
@@ -50,6 +52,8 @@ export default function Home() {
     [network]
   );
 
+  const [toggleMenu, setToggleMenu] = useState(false);
+
   return (
     <div>
       <ConnectionProvider endpoint={endpoint}>
@@ -58,7 +62,7 @@ export default function Home() {
             <MetaplexProvider>
               <div className={styles.App}>
                 <div className="h-[150px] bg-black/[0.52] flex items-center">
-                  <div className="flex justify-between container mx-auto max-w-[940px] relative">
+                  <div className="flex justify-between container lg:mx-auto max-w-[940px] relative mx-[20px]">
                     <a href='#'>
                       <img 
                         src='/777CTZNS_LOGO.png'
@@ -66,15 +70,28 @@ export default function Home() {
                         alt=''
                       ></img>
                     </a>
-                    <nav className="text-white flex items-center gap-10">
+                    <nav className="text-white items-center gap-10 md:flex hidden leading-[1]">
                       <a>BUY</a>
                       <a>WHITEPAPER</a>
                       <div className="z-50">
                         <WalletMultiButton />
                       </div>
                     </nav>
+                    <div className="flex items-center md:hidden relative" onClick={() => setToggleMenu(!toggleMenu)}>
+                      <a className={`text-white leading-[0] cursor-pointer p-[20px] ${toggleMenu ? 'bg-white/[0.5]' : ''}`}>
+                        <FontAwesomeIcon icon={faBars} />
+                      </a>                      
+                    </div>
                   </div>
+                  
                 </div>
+                {toggleMenu && <div className="text-white items-center bg-black/[0.5] flex flex-col gap-5 leading-[1] md:hidden">
+                  <a>BUY</a>
+                  <a>WHITEPAPER</a>
+                  <div className="mb-5">
+                    <WalletMultiButton />
+                  </div>
+                </div>}
                 <ShowNFTs />
               </div>
             </MetaplexProvider>

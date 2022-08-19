@@ -225,7 +225,7 @@ const ShowNFTs = () => {
   return (
     <>
     <div className="">
-      <div className="mt-[80px] flex justify-center">
+      <div className="lg:my-[80px] md:my-[40px] sm:my-[20px]  my-[10px] flex justify-center">
         <button
           type="button"
           onClick={() => {
@@ -233,13 +233,13 @@ const ShowNFTs = () => {
             setStakeDialogOpen(true);
             setSelectedNfts([]);
           }}
-          className="h-[80px] w-[400px] rounded-[10px] bg-[#b11fff] hover:bg-[#a10fef] active:bg-[#b11fff] text-[50px] text-white"
+          className="h-[80px] sm:w-[400px] w-[300px] rounded-[10px] bg-[#b11fff] hover:bg-[#a10fef] active:bg-[#b11fff] sm:text-[50px] text-[40px] text-white"
         >
           PLAY NOW
         </button>
       </div>
-      <div className="mt-[100px] flex justify-center gap-[40px] flex-wrap md:flex-nowrap">
-        <div className="w-[800px] h-[1000px] bg-black/[0.58] border-[5px] rounded-[10px] border-[#5200B5]/[0.58] p-[10px]">
+      <div className="mb-[20px] flex justify-center flex-wrap xl:flex-nowrap">
+        <div className="w-[800px] h-[1000px] bg-black/[0.58] border-[5px] rounded-[10px] border-[#5200B5]/[0.58] p-[10px] mx-[10px] mb-[10px]">
           <div className="mt-[60px] flex justify-center">
             <img 
               src='./ctzns.png'
@@ -262,7 +262,7 @@ const ShowNFTs = () => {
           <div className="mt-[60px] grid grid-cols-2">
             <div className="flex justify-center">
               <button
-                className="h-[80px] w-[290px] rounded-[10px] bg-[#ffa91e] hover:bg-[#ef990e] active:bg-[#ffa91e] text-[38px] text-white"
+                className="h-[80px] px-[20px] py-[10px] rounded-[10px] bg-[#ffa91e] hover:bg-[#ef990e] active:bg-[#ffa91e] sm:text-[38px] text-[28px] text-white leading-[1]"
               >
                 HARVEST FLWRS
               </button>
@@ -275,14 +275,14 @@ const ShowNFTs = () => {
                   setCtznDialogOpen(true);
                   setSelectedNfts([]);
                 }}
-                className="h-[80px] w-[290px] rounded-[10px] bg-[#c7061d] hover:bg-[#d7000d] active:bg-[#c7061d] text-[38px] text-white"
+                className="h-[80px] px-[20px] py-[10px] rounded-[10px] bg-[#c7061d] hover:bg-[#d7000d] active:bg-[#c7061d] sm:text-[38px] text-[28px] text-white leading-[1]"
               >
                 UN-STAKE CTZNS
               </button>
             </div>
           </div>
         </div>
-        <div className="w-[800px] h-[1000px] bg-black/[0.58] border-[5px] rounded-[10px] border-[#5200B5]/[0.58] p-[10px]">
+        <div className="w-[800px] h-[1000px] bg-black/[0.58] border-[5px] rounded-[10px] border-[#5200B5]/[0.58] p-[10px] mx-[10px]">
         <div className="mt-[60px] flex justify-center">
             <img 
               src='./aliens.png'
@@ -305,7 +305,7 @@ const ShowNFTs = () => {
           <div className="mt-[60px] grid grid-cols-2">
             <div className="flex justify-center">
               <button
-                className="h-[80px] w-[290px] rounded-[10px] bg-[#ffa91e] hover:bg-[#ef990e] active:bg-[#ffa91e] text-[38px] text-white"
+                className="h-[80px] px-[20px] py-[10px] rounded-[10px] bg-[#ffa91e] hover:bg-[#ef990e] active:bg-[#ffa91e] sm:text-[38px] text-[28px] text-white leading-[1]"
               >
                 HARVEST FLWRS
               </button>
@@ -318,7 +318,7 @@ const ShowNFTs = () => {
                   setAlienDialogOpen(true);
                   setSelectedNfts([]);
                 }}
-                className="h-[80px] w-[290px] rounded-[10px] bg-[#551cff] hover:bg-[#450cef] active:bg-[#551cff] text-[38px] text-white"
+                className="h-[80px] px-[20px] py-[10px] rounded-[10px] bg-[#551cff] hover:bg-[#450cef] active:bg-[#551cff] sm:text-[38px] text-[28px] text-white leading-[1]"
               >
                 UN-STAKE ALIENS
               </button>
