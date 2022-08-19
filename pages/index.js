@@ -61,18 +61,18 @@ export default function Home() {
           <WalletModalProvider>
             <MetaplexProvider>
               <div className={styles.App}>
-                <div className="h-[150px] bg-black/[0.52] flex items-center">
+                <div className="md:h-[150px] sm:h-[100px] h-[80px] bg-black/[0.52] flex items-center">
                   <div className="flex justify-between container lg:mx-auto max-w-[940px] relative mx-[20px]">
-                    <a href='#'>
+                    <a href='#' className="flex items-center">
                       <img 
                         src='/777CTZNS_LOGO.png'
-                        width={150}                        
+                        className="md:w-[150px] sm:w-[100px]  w-[80px]" 
                         alt=''
                       ></img>
                     </a>
                     <nav className="text-white items-center gap-10 md:flex hidden leading-[1]">
-                      <a>BUY</a>
-                      <a>WHITEPAPER</a>
+                      <a className="cursor-pointer">BUY</a>
+                      <a className="cursor-pointer">WHITEPAPER</a>
                       <div className="z-50">
                         <WalletMultiButton />
                       </div>

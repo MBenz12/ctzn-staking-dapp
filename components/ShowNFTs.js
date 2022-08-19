@@ -225,7 +225,7 @@ const ShowNFTs = () => {
   return (
     <>
     <div className="">
-      <div className="lg:my-[80px] md:my-[40px] sm:my-[20px]  my-[10px] flex justify-center">
+      <div className="lg:my-[80px] md:my-[40px] my-[30px] flex justify-center">
         <button
           type="button"
           onClick={() => {
@@ -238,36 +238,36 @@ const ShowNFTs = () => {
           PLAY NOW
         </button>
       </div>
-      <div className="mb-[20px] flex justify-center flex-wrap xl:flex-nowrap">
-        <div className="w-[800px] h-[1000px] bg-black/[0.58] border-[5px] rounded-[10px] border-[#5200B5]/[0.58] p-[10px] mx-[10px] mb-[10px]">
-          <div className="mt-[60px] flex justify-center">
+      <div className="lg:mb-[100px] md:mb-[40px] mb-[20px] flex justify-center flex-wrap xl:flex-nowrap">
+        <div className="w-[800px] bg-black/[0.58] border-[5px] rounded-[10px] border-[#5200B5]/[0.58] p-[10px] sm:mx-[30px] mx-[10px] mb-[20px]">
+          <div className="lg:mt-[60px] mt-[40px] flex justify-center">
             <img 
               src='./ctzns.png'
               alt=''
-              width={500}
+              className="lg:w-[500px] md:w-[400px] w-[300px]"
             >  
             </img>
           </div>
-          <div className="mt-[40px] flex justify-center">
-            <div className="w-[300px] h-[300px] rounded-[10px] bg-white/[0.5]">
+          <div className="lg:mt-[40px] mt-[30px] flex justify-center">
+            <div className="lg:w-[300px] md:w-[280px] w-[250px] lg:h-[300px] md:h-[280px] h-[250px] rounded-[10px] bg-white/[0.5]">
               
             </div>
           </div>
-          <div className="mt-[60px] text-white  grid grid-cols-2">
-            <div className='text-center text-[50px]'>TOTAL STAKED</div>
-            <div className='text-center text-[50px]'>$FLWRS YIELDED</div>
-            <div className='text-center text-[75px]'>{stakedCtzns.length}</div>
-            <div className='text-center text-[75px]'>5,000</div>
+          <div className="lg:mt-[60px] mt-[40px] text-white  grid grid-cols-2">
+            <div className='text-center md:text-[50px] text-[40px]'>TOTAL STAKED</div>
+            <div className='text-center md:text-[50px] text-[40px]'>$FLWRS YIELDED</div>
+            <div className='text-center md:text-[75px] text-[60px]'>{stakedCtzns.length}</div>
+            <div className='text-center md:text-[75px] text-[60px]'>5,000</div>
           </div>
-          <div className="mt-[60px] grid grid-cols-2">
-            <div className="flex justify-center">
+          <div className="lg:my-[60px] my-[30px] grid grid-cols-2">
+            <div className="flex justify-center px-[5px]">
               <button
-                className="h-[80px] px-[20px] py-[10px] rounded-[10px] bg-[#ffa91e] hover:bg-[#ef990e] active:bg-[#ffa91e] sm:text-[38px] text-[28px] text-white leading-[1]"
+                className="h-[80px] px-[20px] py-[10px] rounded-[10px] bg-[#ffa91e] hover:bg-[#ef990e] active:bg-[#ffa91e] md:text-[38px] text-[30px] text-white leading-[1]"
               >
                 HARVEST FLWRS
               </button>
             </div>
-            <div className="flex justify-center">
+            <div className="flex justify-center px-[5px]">
               <button
                 onClick={() => {
                   if (!stakedCtzns.length) return;
@@ -275,42 +275,42 @@ const ShowNFTs = () => {
                   setCtznDialogOpen(true);
                   setSelectedNfts([]);
                 }}
-                className="h-[80px] px-[20px] py-[10px] rounded-[10px] bg-[#c7061d] hover:bg-[#d7000d] active:bg-[#c7061d] sm:text-[38px] text-[28px] text-white leading-[1]"
+                className="h-[80px] px-[20px] py-[10px] rounded-[10px] bg-[#c7061d] hover:bg-[#d7000d] active:bg-[#c7061d] md:text-[38px] text-[30px] text-white leading-[1]"
               >
                 UN-STAKE CTZNS
               </button>
             </div>
           </div>
         </div>
-        <div className="w-[800px] h-[1000px] bg-black/[0.58] border-[5px] rounded-[10px] border-[#5200B5]/[0.58] p-[10px] mx-[10px]">
-        <div className="mt-[60px] flex justify-center">
+        <div className="w-[800px] bg-black/[0.58] border-[5px] rounded-[10px] border-[#5200B5]/[0.58] p-[10px] sm:mx-[30px] mx-[10px] mb-[20px]">
+          <div className="lg:mt-[60px] mt-[40px] flex justify-center">
             <img 
               src='./aliens.png'
               alt=''
-              width={500}
+              className="lg:w-[500px] md:w-[400px] w-[300px]"
             >  
             </img>
           </div>
-          <div className="mt-[40px] flex justify-center">
-            <div className="w-[300px] h-[300px] rounded-[10px] bg-white/[0.5]">
+          <div className="lg:mt-[40px] mt-[30px] flex justify-center">
+            <div className="lg:w-[300px] md:w-[280px] w-[250px] lg:h-[300px] md:h-[280px] h-[250px] rounded-[10px] bg-white/[0.5]">
               
             </div>
           </div>
-          <div className="mt-[60px] text-white  grid grid-cols-2">
-            <div className='text-center text-[50px]'>TOTAL STAKED</div>
-            <div className='text-center text-[50px]'>$FLWRS YIELDED</div>
-            <div className='text-center text-[75px]'>{stakedAliens.length}</div>
-            <div className='text-center text-[75px]'>5,000</div>
+          <div className="lg:mt-[60px] mt-[40px] text-white  grid grid-cols-2">
+            <div className='text-center md:text-[50px] text-[40px]'>TOTAL STAKED</div>
+            <div className='text-center md:text-[50px] text-[40px]'>$FLWRS YIELDED</div>
+            <div className='text-center md:text-[75px] text-[60px]'>{stakedAliens.length}</div>
+            <div className='text-center md:text-[75px] text-[60px]'>5,000</div>
           </div>
-          <div className="mt-[60px] grid grid-cols-2">
-            <div className="flex justify-center">
+          <div className="lg:my-[60px] my-[30px] grid grid-cols-2">
+            <div className="flex justify-center px-[5px]">
               <button
                 className="h-[80px] px-[20px] py-[10px] rounded-[10px] bg-[#ffa91e] hover:bg-[#ef990e] active:bg-[#ffa91e] sm:text-[38px] text-[28px] text-white leading-[1]"
               >
                 HARVEST FLWRS
               </button>
             </div>
-            <div className="flex justify-center">
+            <div className="flex justify-center px-[5px]">
               <button
                 onClick={() => {
                   if (!stakedAliens.length) return;
