@@ -239,7 +239,7 @@ const ShowNFTs = () => {
         </button>
       </div>
       <div className="lg:mb-[100px] md:mb-[40px] mb-[20px] flex justify-center flex-wrap xl:flex-nowrap">
-        <div className="w-[800px] bg-black/[0.58] border-[5px] rounded-[10px] border-[#5200B5]/[0.58] p-[10px] sm:mx-[30px] mx-[10px] mb-[20px]">
+        <div className="w-[800px] bg-black/[0.58] border-[5px] rounded-[10px] border-[#5200B5]/[0.88] p-[10px] sm:mx-[30px] mx-[10px] mb-[20px]">
           <div className="lg:mt-[60px] mt-[40px] flex justify-center">
             <img 
               src='./ctzns.png'
@@ -282,7 +282,7 @@ const ShowNFTs = () => {
             </div>
           </div>
         </div>
-        <div className="w-[800px] bg-black/[0.58] border-[5px] rounded-[10px] border-[#5200B5]/[0.58] p-[10px] sm:mx-[30px] mx-[10px] mb-[20px]">
+        <div className="w-[800px] bg-black/[0.58] border-[5px] rounded-[10px] border-[#5200B5]/[0.88] p-[10px] sm:mx-[30px] mx-[10px] mb-[20px]">
           <div className="lg:mt-[60px] mt-[40px] flex justify-center">
             <img 
               src='./aliens.png'
