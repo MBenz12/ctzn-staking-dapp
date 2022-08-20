@@ -78,7 +78,7 @@ export default function Home() {
                       </div>
                     </nav>
                     <div className="flex items-center md:hidden relative" onClick={() => setToggleMenu(!toggleMenu)}>
-                      <a className={`text-white leading-[0] cursor-pointer p-[20px] ${toggleMenu ? 'bg-white/[0.5]' : ''}`}>
+                      <a className={`text-white text-[20px] leading-[0] cursor-pointer p-[10px] ${toggleMenu ? 'bg-white/[0.5]' : ''}`}>
                         <FontAwesomeIcon icon={faBars} />
                       </a>                      
                     </div>
