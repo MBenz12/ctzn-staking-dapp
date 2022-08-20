@@ -176,6 +176,7 @@ const ShowNFTs = () => {
       )
     }
 
+    if (!selectedCtzns.length) return
     await vault.stake(0, wallet, userAddress, selectedCtzns)
 
     fetchNFTs()
@@ -214,6 +215,7 @@ const ShowNFTs = () => {
       )
     }
 
+    if (!selectedAliens.length) return
     await vault.stake(1, wallet, userAddress, selectedAliens)
 
     fetchNFTs()
@@ -238,6 +240,8 @@ const ShowNFTs = () => {
         (mint) => stakedCtzns.filter((nft) => nft.mint === mint).length,
       )
     }
+
+    if (!selectedCtzns.length) return
 
     const stakeAccounts = []
     for (const nft of selectedCtzns) {
@@ -269,6 +273,8 @@ const ShowNFTs = () => {
       )
     }
 
+    if (!selectedAliens.length) return
+
     const stakeAccounts = []
     for (const nft of selectedAliens) {
       const idx = stakedAliens.map((nft) => nft.mint).indexOf(nft)
@@ -297,7 +303,7 @@ const ShowNFTs = () => {
           </button>
         </div>
         <div className="lg:mb-[100px] md:mb-[40px] mb-[20px] flex justify-center flex-wrap xl:flex-nowrap">
-          <div className="w-[800px] bg-black/[0.58] border-[5px] rounded-[10px] border-[#5200B5]/[0.88] p-[10px] sm:mx-[30px] mx-[10px] mb-[20px]">
+          <div className="w-[700px] bg-black/[0.58] border-[5px] rounded-[10px] border-[#5200B5]/[0.88] p-[10px] sm:mx-[30px] mx-[10px] mb-[20px]">
             <div className="lg:mt-[60px] mt-[40px] flex justify-center">
               <img
                 src="./ctzns.png"
@@ -343,7 +349,7 @@ const ShowNFTs = () => {
               </div>
             </div>
           </div>
-          <div className="w-[800px] bg-black/[0.58] border-[5px] rounded-[10px] border-[#5200B5]/[0.88] p-[10px] sm:mx-[30px] mx-[10px] mb-[20px]">
+          <div className="w-[700px] bg-black/[0.58] border-[5px] rounded-[10px] border-[#5200B5]/[0.88] p-[10px] sm:mx-[30px] mx-[10px] mb-[20px]">
             <div className="lg:mt-[60px] mt-[40px] flex justify-center">
               <img
                 src="./aliens.png"
@@ -424,29 +430,34 @@ const ShowNFTs = () => {
                     leave="ease-in duration-200"
                     leaveFrom="opacity-100 scale-100"
                     leaveTo="opacity-0 scale-95"
+                    className="w-full flex justify-center"
                   >
-                    <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-black/[0.8] p-2 text-left align-middle shadow-xl transition-all border-2 border-[#5200B5]/[0.88]">
+                    <Dialog.Panel className="w-full max-w-5xl transform overflow-hidden rounded-2xl bg-[#5200B5]/[0.78] sm:p-6 p-2 text-left align-middle shadow-xl transition-all border-[5px] border-[#5200B5]/[0.88] flex flex-col space-y-5">
                       {!!ctzns.length && (
-                        <div className=" p-4">
-                          <div className="flex space-x-4 items-center flex-wrap">
-                            <h3>CTZNS</h3>
+                        <div>
+                          <div className="flex items-center sm:space-x-5 my-5 w-full sm:flex-row flex-col space-y-2">
+                            <img
+                              src="./ctzns.png"
+                              alt=""
+                              className="lg:w-[400px] md:w-[300px] w-[200px]"
+                            ></img>
                             <button
                               type="button"
-                              className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                              className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-6 py-4 text-sm font-bold text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:text-[30px] text-[24px]"
                               onClick={() => handleClickStakeCtzn(false)}
                             >
-                              Stake
+                              STAKE
                             </button>
                             <button
                               type="button"
-                              className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                              className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-6 py-4 text-sm font-bold text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:text-[30px] text-[24px]"
                               onClick={() => handleClickStakeCtzn(true)}
                             >
-                              Stake All
+                              STAKE ALL
                             </button>
                           </div>
-                          <div className="h-[150px] overflow-x-auto flex items-center">
-                            <div className="flex space-x-4 ">
+                          <div className="w-full flex items-center overflow-x-auto">
+                            <div className="flex space-x-4">
                               {ctzns.map((nft) => (
                                 <div
                                   key={nft.mint}
@@ -463,7 +474,7 @@ const ShowNFTs = () => {
                                       )
                                     }
                                   }}
-                                  className={`w-[120px] h-[120px] rounded-lg ${
+                                  className={`lg:w-[300px] md:w-[280px] sm:w-[250px] w-[200px] lg:h-[300px] md:h-[280px] sm:h-[250px] h-[200px] sm-[5px] rounded-lg ${
                                     selectedNfts.includes(nft.mint)
                                       ? 'border-2 border-red-400'
                                       : 'border border-indigo-400'
@@ -482,28 +493,31 @@ const ShowNFTs = () => {
                           </div>
                         </div>
                       )}
-
                       {!!aliens.length && (
-                        <div className="mt-4 border-2 border-indigo-600 p-4">
-                          <div className="flex space-x-4 items-center">
-                            <h3>ALIENS</h3>
+                        <div>
+                          <div className="flex items-center sm:space-x-5 my-5 w-full sm:flex-row flex-col space-y-2">
+                            <img
+                              src="./aliens.png"
+                              alt=""
+                              className="lg:w-[400px] md:w-[300px] w-[200px]"
+                            ></img>
                             <button
                               type="button"
-                              className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                              onClick={() => handleClickStakeAlien(false)}
+                              className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-6 py-4 text-sm font-bold text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:text-[30px] text-[24px]"
+                              onClick={() => handleClickStakeCtzn(false)}
                             >
-                              Stake
+                              STAKE
                             </button>
                             <button
                               type="button"
-                              className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                              onClick={() => handleClickStakeAlien(true)}
+                              className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-6 py-4 text-sm font-bold text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:text-[30px] text-[24px]"
+                              onClick={() => handleClickStakeCtzn(true)}
                             >
-                              Stake All
+                              STAKE ALL
                             </button>
                           </div>
-                          <div className="w-[600px] h-[150px] overflow-x-auto flex items-center">
-                            <div className="flex space-x-4 ">
+                          <div className="w-full flex items-center overflow-x-auto">
+                            <div className="flex space-x-4">
                               {aliens.map((nft) => (
                                 <div
                                   key={nft.mint}
@@ -520,7 +534,7 @@ const ShowNFTs = () => {
                                       )
                                     }
                                   }}
-                                  className={`w-[120px] h-[120px] rounded-lg ${
+                                  className={`lg:w-[300px] md:w-[280px] sm:w-[250px] w-[200px] lg:h-[300px] md:h-[280px] sm:h-[250px] h-[200px] sm-[5px] rounded-lg ${
                                     selectedNfts.includes(nft.mint)
                                       ? 'border-2 border-red-400'
                                       : 'border border-indigo-400'
@@ -574,58 +588,59 @@ const ShowNFTs = () => {
                     leaveTo="opacity-0 scale-95"
                     className="w-full flex justify-center"
                   >
-                    <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                      <div className="flex space-x-4 items-center justify-center">
+                    <Dialog.Panel className="w-full max-w-5xl transform overflow-hidden rounded-2xl bg-[#5200B5]/[0.78] sm:p-6 p-2 text-left align-middle shadow-xl transition-all border-[5px] border-[#5200B5]/[0.88]">
+                      <div className="flex justify-center">
+                        <img
+                          src="./ctzns.png"
+                          alt=""
+                          className="lg:w-[500px] md:w-[400px] w-[300px]"
+                        ></img>
+                      </div>
+                      <div className="flex space-x-4 items-center justify-center my-5">
                         <button
                           type="button"
-                          className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                          className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-6 py-4 text-sm font-bold text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:text-[30px] text-[24px]"
                           onClick={() => handleClickUnstakeCtzn(false)}
                         >
-                          Un-stake
+                          UN-STAKE
                         </button>
                         <button
                           type="button"
-                          className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                          className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-6 py-4 text-sm font-bold text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:text-[30px] text-[24px]"
                           onClick={() => handleClickUnstakeCtzn(true)}
                         >
-                          Un-stake All
+                          UN-STAKE ALL
                         </button>
                       </div>
-                      <div className="p-4 w-full overflow-x-auto">
-                        <div className="mt-4">
-                          <div className="flex flex-wrap justify-start">
-                            {stakedCtzns.map((nft) => (
-                              <div
-                                key={nft.mint}
-                                onClick={() => {
-                                  if (selectedNfts.includes(nft.mint)) {
-                                    setSelectedNfts(
-                                      selectedNfts.filter(
-                                        (mint) => mint !== nft.mint,
-                                      ),
-                                    )
-                                  } else {
-                                    setSelectedNfts(
-                                      selectedNfts.concat(nft.mint),
-                                    )
-                                  }
-                                }}
-                                className={`w-[120px] h-[120px] m-[5px] rounded-lg ${
-                                  selectedNfts.includes(nft.mint)
-                                    ? 'border-2 border-red-400'
-                                    : 'border border-indigo-400'
-                                }`}
-                              >
-                                <img
-                                  className="w-full h-full rounded-lg p-1"
-                                  src={
-                                    nft.metadata.image || '/fallbackImage.jpg'
-                                  }
-                                  alt="The downloaded illustration of the provided NFT address."
-                                />
-                              </div>
-                            ))}
-                          </div>
+                      <div className="w-full flex items-center overflow-x-auto">
+                        <div className="flex space-x-4">
+                          {stakedCtzns.map((nft) => (
+                            <div
+                              key={nft.mint}
+                              onClick={() => {
+                                if (selectedNfts.includes(nft.mint)) {
+                                  setSelectedNfts(
+                                    selectedNfts.filter(
+                                      (mint) => mint !== nft.mint,
+                                    ),
+                                  )
+                                } else {
+                                  setSelectedNfts(selectedNfts.concat(nft.mint))
+                                }
+                              }}
+                              className={`lg:w-[300px] md:w-[280px] sm:w-[250px] w-[200px] lg:h-[300px] md:h-[280px] sm:h-[250px] h-[200px] sm-[5px] rounded-lg ${
+                                selectedNfts.includes(nft.mint)
+                                  ? 'border-2 border-red-400'
+                                  : 'border border-indigo-400'
+                              }`}
+                            >
+                              <img
+                                className="w-full h-full rounded-lg p-1"
+                                src={nft.metadata.image || '/fallbackImage.jpg'}
+                                alt="The downloaded illustration of the provided NFT address."
+                              />
+                            </div>
+                          ))}
                         </div>
                       </div>
                     </Dialog.Panel>
@@ -663,24 +678,31 @@ const ShowNFTs = () => {
                     leaveTo="opacity-0 scale-95"
                     className="w-full flex justify-center"
                   >
-                    <Dialog.Panel className="w-full max-w-5xl transform overflow-hidden rounded-2xl bg-[#5200B5]/[0.58] p-2 text-left align-middle shadow-xl transition-all border-[5px] border-[#5200B5]/[0.88]">
-                      <div className="flex space-x-4 items-center justify-center">
+                    <Dialog.Panel className="w-full max-w-5xl transform overflow-hidden rounded-2xl bg-[#5200B5]/[0.78] sm:p-6 p-2 text-left align-middle shadow-xl transition-all border-[5px] border-[#5200B5]/[0.88]">
+                      <div className="flex justify-center">
+                        <img
+                          src="./aliens.png"
+                          alt=""
+                          className="lg:w-[500px] md:w-[400px] w-[300px]"
+                        ></img>
+                      </div>
+                      <div className="flex space-x-4 items-center justify-center my-5">
                         <button
                           type="button"
-                          className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                          className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-6 py-4 text-sm font-bold text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:text-[30px] text-[24px]"
                           onClick={() => handleClickUnstakeAlien(false)}
                         >
-                          Un-stake
+                          UN-STAKE
                         </button>
                         <button
                           type="button"
-                          className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                          className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-6 py-4 text-sm font-bold text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2  sm:text-[30px] text-[24px]"
                           onClick={() => handleClickUnstakeAlien(true)}
                         >
-                          Un-stake All
+                          UN-STAKE ALL
                         </button>
                       </div>
-                      <div className="w-full flex items-center overflow-x-auto">  
+                      <div className="w-full flex items-center overflow-x-auto">
                         <div className="flex space-x-4">
                           {stakedAliens.map((nft) => (
                             <div
@@ -693,9 +715,7 @@ const ShowNFTs = () => {
                                     ),
                                   )
                                 } else {
-                                  setSelectedNfts(
-                                    selectedNfts.concat(nft.mint),
-                                  )
+                                  setSelectedNfts(selectedNfts.concat(nft.mint))
                                 }
                               }}
                               className={`lg:w-[300px] md:w-[280px] sm:w-[250px] w-[200px] lg:h-[300px] md:h-[280px] sm:h-[250px] h-[200px] sm-[5px] rounded-lg ${
@@ -706,9 +726,7 @@ const ShowNFTs = () => {
                             >
                               <img
                                 className="w-full h-full rounded-lg p-1"
-                                src={
-                                  nft.metadata.image || '/fallbackImage.jpg'
-                                }
+                                src={nft.metadata.image || '/fallbackImage.jpg'}
                                 alt="The downloaded illustration of the provided NFT address."
                               />
                             </div>
