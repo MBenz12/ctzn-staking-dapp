@@ -324,7 +324,7 @@ const ShowNFTs = () => {
             </div>
             <div className="lg:my-[60px] my-[30px] grid grid-cols-2">
               <div className="flex justify-center px-[5px]">
-                <button className="h-[80px] px-[20px] py-[10px] rounded-[10px] bg-[#ffa91e] hover:bg-[#ef990e] active:bg-[#ffa91e] md:text-[38px] text-[30px] text-white leading-[1]">
+                <button className="h-[80px] px-[20px] py-[10px] rounded-[10px] bg-[#ffa91e] hover:bg-[#ef990e] active:bg-[#ffa91e] md:text-[38px] text-[28px] text-white leading-[1]">
                   HARVEST FLWRS
                 </button>
               </div>
@@ -336,7 +336,7 @@ const ShowNFTs = () => {
                     setCtznDialogOpen(true)
                     setSelectedNfts([])
                   }}
-                  className="h-[80px] px-[20px] py-[10px] rounded-[10px] bg-[#c7061d] hover:bg-[#d7000d] active:bg-[#c7061d] md:text-[38px] text-[30px] text-white leading-[1]"
+                  className="h-[80px] px-[20px] py-[10px] rounded-[10px] bg-[#c7061d] hover:bg-[#d7000d] active:bg-[#c7061d] md:text-[38px] text-[28px] text-white leading-[1]"
                 >
                   UN-STAKE CTZNS
                 </button>
