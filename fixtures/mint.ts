@@ -41,7 +41,7 @@ class Mint {
     await spawnMoney(program, authority.publicKey, 1);
     console.log('request airdrop 1 sol ');
     let mint: Keypair | PublicKey = Keypair.generate();
-    if (typeof authority === typeof Keypair) {
+    if ("secretKey" in authority) {
       mint = await createMint(
         program.provider.connection,
         authority as Keypair,
@@ -81,7 +81,7 @@ class Mint {
     to: TokenAccount<T>,
     amount: number
   ) {
-    if (typeof this.authority === typeof Keypair) {
+    if ("secretKey" in this.authority) {
       await mintTo(
         this.program.provider.connection,
         this.authority as Keypair,
@@ -120,7 +120,7 @@ class Mint {
     T extends PublicKey | Keypair
   >(owner: T): Promise<TokenAccount<T>> {
     let tokenAccount;
-    if (typeof this.authority === typeof Keypair) {
+    if ("secretKey" in this.authority) {
       tokenAccount = await createAssociatedTokenAccount(
         this.program.provider.connection,
         this.authority as Keypair,

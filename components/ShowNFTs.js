@@ -45,6 +45,9 @@ const ShowNFTs = () => {
   const [selectedNfts, setSelectedNfts] = useState([])
   const [loading, setLoading] = useState(false)
   const [vault, setVault] = useState()
+  const [ctznYieldedAmount, setCtznYieldedAmount] = useState(0)
+  const [alienYieldedAmount, setAlienYieldedAmount] = useState(0)
+  const [alienTypes, setAlienTypes] = useState({})
 
   useEffect(() => {
     const createVault = async () => {
@@ -53,10 +56,59 @@ const ShowNFTs = () => {
     createVault()
   }, [])
 
-  const fetchNFTs = async () => {
+  const fetchUserData = async () => {
+    setLoading(true)
     try {
-      setLoading(true)
+      const [userCtznAddress] = await getUserAddress(
+        vault.key,
+        wallet.publicKey,
+        program,
+        0,
+      )
+      const [userAlienAddress] = await getUserAddress(
+        vault.key,
+        wallet.publicKey,
+        program,
+        1,
+      )
 
+      const ctznUserData = await vault.fetchUser(userCtznAddress)
+      const alienUserData = await vault.fetchUser(userAlienAddress)
+
+      let yieldedAmount = 0
+      ctznUserData.items.forEach((stakeItem) => {
+        const timeDiff =
+          new Date().getTime() / 1000 - stakeItem.lastClaimedTime.toNumber()
+
+        yieldedAmount += Math.floor(timeDiff / 60) * 36
+      })
+
+      const vaultData = await vault.fetch()
+      const alphaAliensCount = vaultData.alphaAliensCount
+      const normalAliensCount = vaultData.normalAliensCount
+      const totalQuality = alphaAliensCount * 6 + normalAliensCount * 5
+      let myQuality = 0
+
+      alienUserData.items.forEach((stakeItem) => {
+        myQuality += stakeItem.itemType.normalAlien ? 5 : 6
+      })
+
+      setAlienYieldedAmount(
+        (vaultData.aliensPoolAmount.toNumber() * myQuality) /
+          totalQuality /
+          100,
+      )
+      setCtznYieldedAmount(yieldedAmount)
+    } catch (error) {
+      console.log(error)
+    }
+
+    setLoading(false)
+  }
+
+  const fetchNFTs = async () => {
+    setLoading(true)
+    try {
       const list = await (
         await metaplex.nfts().findAllByOwner(new PublicKey(wallet.publicKey))
       ).filter(
@@ -68,6 +120,12 @@ const ShowNFTs = () => {
           nft.name,
       )
 
+      const types = {}
+      list
+        .filter((nft) => nft.symbol !== 'CTZN')
+        .forEach((nft) => (types[nft.mint] = nft.symbol))
+
+      setAlienTypes(types)
       setCtzns(list.filter((nft) => nft.symbol === 'CTZN'))
       setAliens(list.filter((nft) => nft.symbol !== 'CTZN'))
 
@@ -115,6 +173,7 @@ const ShowNFTs = () => {
   useEffect(() => {
     if (wallet.publicKey && vault) {
       fetchNFTs()
+      fetchUserData()
     }
   }, [wallet.publicKey, vault])
 
@@ -134,156 +193,205 @@ const ShowNFTs = () => {
   }, [ctzns, aliens, stakedCtzns, stakedAliens])
 
   const loadData = async (nfts) => {
-    const nftsToLoad = nfts.filter((nft) => {
-      return nft.metadataTask.isPending()
-    })
+    try {
+      const nftsToLoad = nfts.filter((nft) => {
+        return nft.metadataTask.isPending()
+      })
 
-    const promises = nftsToLoad.map(
-      (nft) => nft.metadataTask && nft.metadataTask.run(),
-    )
-    await Promise.all(promises)
+      const promises = nftsToLoad.map(
+        (nft) => nft.metadataTask && nft.metadataTask.run(),
+      )
+      await Promise.all(promises)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const handleClickStakeCtzn = async (all) => {
-    const [userAddress] = await getUserAddress(
-      vault.key,
-      wallet.publicKey,
-      program,
-      0,
-    )
+    setLoading(true)
     try {
-      const userData = await vault.fetchUser(userAddress, 0)
-      if (!userData) {
+      const [userAddress] = await getUserAddress(
+        vault.key,
+        wallet.publicKey,
+        program,
+        0,
+      )
+      try {
+        const userData = await vault.fetchUser(userAddress, 0)
+        if (!userData) {
+          await vault.createUser({
+            authority: wallet,
+            userType: 0,
+          })
+        }
+      } catch (error) {
+        console.log(error)
         await vault.createUser({
           authority: wallet,
           userType: 0,
         })
       }
+
+      let selectedCtzns
+      if (all) {
+        selectedCtzns = ctzns.map((nft) => nft.mint)
+      } else {
+        selectedCtzns = selectedNfts.filter(
+          (mint) => ctzns.filter((nft) => nft.mint === mint).length,
+        )
+      }
+
+      if (!selectedCtzns.length) return
+      await vault.stake(0, wallet, userAddress, selectedCtzns)
+
+      fetchNFTs()
+      fetchUserData()
+      setStakeDialogOpen(false)
     } catch (error) {
       console.log(error)
-      await vault.createUser({
-        authority: wallet,
-        userType: 0,
-      })
     }
-
-    let selectedCtzns
-    if (all) {
-      selectedCtzns = ctzns.map((nft) => nft.mint)
-    } else {
-      selectedCtzns = selectedNfts.filter(
-        (mint) => ctzns.filter((nft) => nft.mint === mint).length,
-      )
-    }
-
-    if (!selectedCtzns.length) return
-    await vault.stake(0, wallet, userAddress, selectedCtzns)
-
-    fetchNFTs()
-    setStakeDialogOpen(false)
+    setLoading(false)
   }
 
   const handleClickStakeAlien = async (all) => {
-    const [userAddress] = await getUserAddress(
-      vault.key,
-      wallet.publicKey,
-      program,
-      1,
-    )
+    setLoading(true)
     try {
-      const userData = await vault.fetchUser(userAddress, 1)
-      if (!userData) {
+      const [userAddress] = await getUserAddress(
+        vault.key,
+        wallet.publicKey,
+        program,
+        1,
+      )
+      try {
+        const userData = await vault.fetchUser(userAddress, 1)
+        if (!userData) {
+          await vault.createUser({
+            authority: wallet,
+            userType: 1,
+          })
+        }
+      } catch (error) {
+        console.log(error)
         await vault.createUser({
           authority: wallet,
           userType: 1,
         })
       }
+
+      let selectedAliens
+      if (all) {
+        selectedAliens = aliens.map((nft) => nft.mint)
+      } else {
+        selectedAliens = selectedNfts.filter(
+          (mint) => aliens.filter((nft) => nft.mint === mint).length,
+        )
+      }
+
+      if (!selectedAliens.length) return
+      await vault.stake(1, wallet, userAddress, selectedAliens, alienTypes)
+
+      fetchNFTs()
+      fetchUserData()
+      setStakeDialogOpen(false)
     } catch (error) {
       console.log(error)
-      await vault.createUser({
-        authority: wallet,
-        userType: 1,
-      })
     }
-
-    let selectedAliens
-    if (all) {
-      selectedAliens = aliens.map((nft) => nft.mint)
-    } else {
-      selectedAliens = selectedNfts.filter(
-        (mint) => aliens.filter((nft) => nft.mint === mint).length,
-      )
-    }
-
-    if (!selectedAliens.length) return
-    await vault.stake(1, wallet, userAddress, selectedAliens)
-
-    fetchNFTs()
-    setStakeDialogOpen(false)
+    setLoading(false)
   }
 
   const handleClickUnstakeCtzn = async (all) => {
     if (!stakedCtzns.length) return
 
-    const [userAddress] = await getUserAddress(
-      vault.key,
-      wallet.publicKey,
-      program,
-      0,
-    )
-
-    let selectedCtzns
-    if (all) {
-      selectedCtzns = stakedCtzns.map((nft) => nft.mint)
-    } else {
-      selectedCtzns = selectedNfts.filter(
-        (mint) => stakedCtzns.filter((nft) => nft.mint === mint).length,
+    setLoading(true)
+    try {
+      const [userAddress] = await getUserAddress(
+        vault.key,
+        wallet.publicKey,
+        program,
+        0,
       )
+
+      let selectedCtzns
+      if (all) {
+        selectedCtzns = stakedCtzns.map((nft) => nft.mint)
+      } else {
+        selectedCtzns = selectedNfts.filter(
+          (mint) => stakedCtzns.filter((nft) => nft.mint === mint).length,
+        )
+      }
+
+      if (!selectedCtzns.length) return
+
+      const stakeAccounts = []
+      for (const nft of selectedCtzns) {
+        const idx = stakedCtzns.map((nft) => nft.mint).indexOf(nft)
+        stakeAccounts.push(ctznAccounts[idx])
+      }
+      await vault.unstake(wallet, userAddress, stakeAccounts)
+
+      fetchNFTs()
+      fetchUserData()
+      setCtznDialogOpen(false)
+    } catch (error) {
+      console.log(error)
     }
-
-    if (!selectedCtzns.length) return
-
-    const stakeAccounts = []
-    for (const nft of selectedCtzns) {
-      const idx = stakedCtzns.map((nft) => nft.mint).indexOf(nft)
-      stakeAccounts.push(ctznAccounts[idx])
-    }
-    await vault.unstake(wallet, userAddress, stakeAccounts)
-
-    fetchNFTs()
-    setCtznDialogOpen(false)
+    setLoading(false)
   }
 
   const handleClickUnstakeAlien = async (all) => {
     if (!stakedAliens.length) return
 
-    const [userAddress] = await getUserAddress(
-      vault.key,
-      wallet.publicKey,
-      program,
-      1,
-    )
-
-    let selectedAliens
-    if (all) {
-      selectedAliens = stakedAliens.map((nft) => nft.mint)
-    } else {
-      selectedAliens = selectedNfts.filter(
-        (mint) => stakedAliens.filter((nft) => nft.mint === mint).length,
+    setLoading(true)
+    try {
+      const [userAddress] = await getUserAddress(
+        vault.key,
+        wallet.publicKey,
+        program,
+        1,
       )
+
+      let selectedAliens
+      if (all) {
+        selectedAliens = stakedAliens.map((nft) => nft.mint)
+      } else {
+        selectedAliens = selectedNfts.filter(
+          (mint) => stakedAliens.filter((nft) => nft.mint === mint).length,
+        )
+      }
+
+      if (!selectedAliens.length) return
+
+      const stakeAccounts = []
+      for (const nft of selectedAliens) {
+        const idx = stakedAliens.map((nft) => nft.mint).indexOf(nft)
+        stakeAccounts.push(alienAccounts[idx])
+      }
+      await vault.unstake(wallet, userAddress, stakeAccounts)
+
+      fetchNFTs()
+      fetchUserData()
+      setAlienDialogOpen(false)
+    } catch (error) {
+      console.log(error)
     }
+    setLoading(false)
+  }
 
-    if (!selectedAliens.length) return
-
-    const stakeAccounts = []
-    for (const nft of selectedAliens) {
-      const idx = stakedAliens.map((nft) => nft.mint).indexOf(nft)
-      stakeAccounts.push(alienAccounts[idx])
+  const handleClickHarvest = async (userType) => {
+    setLoading(true)
+    try {
+      const [userAddress] = await getUserAddress(
+        vault.key,
+        wallet.publicKey,
+        program,
+        userType,
+      )
+      await vault.claim(wallet, userAddress, userType)
+      fetchUserData()
+    } catch (error) {
+      console.log(error)
     }
-    await vault.unstake(wallet, userAddress, stakeAccounts)
-
-    fetchNFTs()
-    setAlienDialogOpen(false)
+    setLoading(false)
   }
 
   return (
@@ -325,12 +433,21 @@ const ShowNFTs = () => {
                 {stakedCtzns.length}
               </div>
               <div className="text-center md:text-[75px] text-[60px]">
-                5,000
+                {ctznYieldedAmount.toLocaleString('en-us', {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                })}
               </div>
             </div>
             <div className="lg:my-[60px] my-[30px] grid grid-cols-2">
               <div className="flex justify-center px-[5px]">
-                <button className="h-[80px] px-[20px] py-[10px] rounded-[10px] bg-[#ffa91e] hover:bg-[#ef990e] active:bg-[#ffa91e] md:text-[38px] text-[28px] text-white leading-[1]">
+                <button
+                  onClick={() => {
+                    if (!stakedCtzns.length || !ctznYieldedAmount) return
+                    handleClickHarvest(1)
+                  }}
+                  className="h-[80px] px-[20px] py-[10px] rounded-[10px] bg-[#ffa91e] hover:bg-[#ef990e] active:bg-[#ffa91e] md:text-[38px] text-[28px] text-white leading-[1]"
+                >
                   HARVEST FLWRS
                 </button>
               </div>
@@ -371,12 +488,21 @@ const ShowNFTs = () => {
                 {stakedAliens.length}
               </div>
               <div className="text-center md:text-[75px] text-[60px]">
-                5,000
+                {alienYieldedAmount.toLocaleString('en-us', {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 2,
+                })}
               </div>
             </div>
             <div className="lg:my-[60px] my-[30px] grid grid-cols-2">
               <div className="flex justify-center px-[5px]">
-                <button className="h-[80px] px-[20px] py-[10px] rounded-[10px] bg-[#ffa91e] hover:bg-[#ef990e] active:bg-[#ffa91e] sm:text-[38px] text-[28px] text-white leading-[1]">
+                <button
+                  onClick={() => {
+                    if (!stakedAliens.length || !alienYieldedAmount) return
+                    handleClickHarvest(1)
+                  }}
+                  className="h-[80px] px-[20px] py-[10px] rounded-[10px] bg-[#ffa91e] hover:bg-[#ef990e] active:bg-[#ffa91e] sm:text-[38px] text-[28px] text-white leading-[1]"
+                >
                   HARVEST FLWRS
                 </button>
               </div>
@@ -400,9 +526,11 @@ const ShowNFTs = () => {
 
       {wallet.publicKey && (
         <div>
-          {/* {loading ? (
-          <img className={styles.loadingIcon} src="/loading.svg" alt="" />
-        ) : } */}
+          {loading && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+              <img className={styles.loadingIcon} src="/loading.svg" alt="" />
+            </div>
+          )}
 
           <Transition appear show={stakeDialogOpen}>
             <Dialog
@@ -504,14 +632,14 @@ const ShowNFTs = () => {
                             <button
                               type="button"
                               className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-6 py-4 text-sm font-bold text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:text-[30px] text-[24px]"
-                              onClick={() => handleClickStakeCtzn(false)}
+                              onClick={() => handleClickStakeAlien(false)}
                             >
                               STAKE
                             </button>
                             <button
                               type="button"
                               className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-6 py-4 text-sm font-bold text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:text-[30px] text-[24px]"
-                              onClick={() => handleClickStakeCtzn(true)}
+                              onClick={() => handleClickStakeAlien(true)}
                             >
                               STAKE ALL
                             </button>

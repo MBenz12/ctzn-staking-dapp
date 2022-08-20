@@ -73,7 +73,7 @@ export default function Home() {
                     <nav className="text-white items-center gap-10 md:flex hidden leading-[1]">
                       <a className="cursor-pointer">BUY</a>
                       <a className="cursor-pointer">WHITEPAPER</a>
-                      <div className="z-50">
+                      <div>
                         <WalletMultiButton />
                       </div>
                     </nav>
