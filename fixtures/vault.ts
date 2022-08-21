@@ -246,7 +246,6 @@ export class Vault {
       txSignature = await this.program.rpc.fund(amount, {
         accounts: {
           funder: funder.publicKey,
-          authority,
           vault: this.key,
           ctznsPoolAccount: this.ctznsPoolAccount,
           funderAccount,
@@ -261,7 +260,6 @@ export class Vault {
       let tx = await this.program.transaction.fund(amount, {
         accounts: {
           funder: funder.publicKey,
-          authority,
           vault: this.key,
           ctznsPoolAccount: this.ctznsPoolAccount,
           funderAccount,
@@ -283,7 +281,7 @@ export class Vault {
     nfts: PublicKey[],
     alienTypes,
   ) {
-    let txSignature, tx;
+    const txs = [];
     for (const nft of nfts) {
       const mint = new Mint(nft, null, this.program, 0);
       const stakeAccount = await mint.getAssociatedTokenAddress(curAuthoriy.publicKey);
@@ -291,10 +289,10 @@ export class Vault {
 
       let type = itemType;
       if (itemType) {
-        type = alienTypes[nft.toString()] === "LPHA CTZN" ? 2 : 1;
+        type = alienTypes[nft.toString()] === "ALPHA CTZN" ? 2 : 1;
       }
 
-      const oneTx = await this.program.transaction.stake(type, {
+      const tx = await this.program.transaction.stake(type, {
         accounts: {
           staker: curAuthoriy.publicKey,
           vault: this.key,
@@ -305,23 +303,78 @@ export class Vault {
           systemProgram: SystemProgram.programId,
         }
       });
-      if (!tx) { tx = oneTx; }
-      else {
-        tx.instructions = tx.instructions.concat(oneTx.instructions);
-      }
-      console.log(tx.instructions)
+      let blockhash = await this.program.provider.connection.getLatestBlockhash('finalized');
+      tx.recentBlockhash = blockhash.blockhash;
+      tx.feePayer = curAuthoriy.publicKey;
+      txs.push(tx);
     }
-
-    txSignature = await curAuthoriy.sendTransaction(tx, this.program.provider.connection);
-    await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");
+    
+    const signedTxs = await curAuthoriy.signAllTransactions(txs);
+    // console.log(signedTxs)
+    for (const tx of signedTxs) {
+      const txSignature = await this.program.provider.connection.sendRawTransaction(tx.serialize());
+      await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");  
+      console.log(txSignature);
+    }
   }
 
   async unstake(
     authority: WalletContextState,
     user: PublicKey,
     stakeAccounts: PublicKey[],
+    userType: number,
   ): Promise<boolean> {
-    let txSignature, tx;
+    const txs = [];
+    const claimerAccount = await this.mint.getAssociatedTokenAddress(
+      authority.publicKey
+    );
+    const [ctznsPool] = await getRewardAddress(
+      this.key,
+      this.program,
+      0
+    );
+
+    const [aliensPool] = await getRewardAddress(
+      this.key,
+      this.program,
+      1
+    );
+
+    const [godsPool] = await getRewardAddress(
+      this.key,
+      this.program,
+      2
+    );
+
+    const ctznsPoolAccount = await this.mint.getAssociatedTokenAddress(ctznsPool);
+    const aliensPoolAccount = await this.mint.getAssociatedTokenAddress(aliensPool);
+    const godsPoolAccount = await this.mint.getAssociatedTokenAddress(godsPool);
+
+    const tx = await this.program.transaction.claim(userType, {
+      accounts: {
+        claimer: authority.publicKey,
+        vault: this.key,
+        ctznsPool,
+        aliensPool,
+        godsPool,
+        rewardMint: this.mint.key,
+        ctznsPoolAccount,
+        aliensPoolAccount,
+        godsPoolAccount,
+        claimerAccount,
+        user,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        rent: SYSVAR_RENT_PUBKEY,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        systemProgram: SystemProgram.programId,
+      },
+    });
+
+    let blockhash = await this.program.provider.connection.getLatestBlockhash('finalized');
+    tx.recentBlockhash = blockhash.blockhash;
+    tx.feePayer = authority.publicKey;
+    txs.push(tx);
+
     for (const stakeAccount of stakeAccounts) {
       const [vaultPda, vaultStakeBump] = await getStakeAddress(
         this.key,
@@ -330,7 +383,7 @@ export class Vault {
         this.program
       );
 
-      const oneTx = await this.program.transaction.unstake(vaultStakeBump, {
+      const tx = await this.program.transaction.unstake(vaultStakeBump, {
         accounts: {
           staker: authority.publicKey,
           vault: this.key,
@@ -341,19 +394,21 @@ export class Vault {
           systemProgram: SystemProgram.programId,
         }
       });
-
-      if (!tx) { tx = oneTx; }
-      else {
-        tx.instructions = tx.instructions.concat(oneTx.instructions);
-      }
+      let blockhash = await this.program.provider.connection.getLatestBlockhash('finalized');
+      tx.recentBlockhash = blockhash.blockhash;
+      tx.feePayer = authority.publicKey;
+      txs.push(tx);
     }
 
-
-    txSignature = await authority.sendTransaction(tx, this.program.provider.connection);
-    await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");
-
+    const signedTxs = await authority.signAllTransactions(txs);
+    for (const tx of signedTxs) {
+      const txSignature = await this.program.provider.connection.sendRawTransaction(tx.serialize());
+      await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");
+      console.log(txSignature);
+    }
     return true;
   }
+
   async claim(claimer: WalletContextState, user: PublicKey, userType: number) {
     const claimerAccount = await this.mint.getAssociatedTokenAddress(
       claimer.publicKey

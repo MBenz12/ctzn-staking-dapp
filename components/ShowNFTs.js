@@ -74,31 +74,30 @@ const ShowNFTs = () => {
 
       const ctznUserData = await vault.fetchUser(userCtznAddress)
       const alienUserData = await vault.fetchUser(userAlienAddress)
+      const vaultData = await vault.fetch()
 
       let yieldedAmount = 0
-      ctznUserData.items.forEach((stakeItem) => {
-        const timeDiff =
-          new Date().getTime() / 1000 - stakeItem.lastClaimedTime.toNumber()
+      if (ctznUserData && ctznUserData.items) {
+        ctznUserData.items.forEach((stakeItem) => {
+          const timeDiff =
+            new Date().getTime() / 1000 - stakeItem.lastClaimedTime.toNumber()
 
-        yieldedAmount += Math.floor(timeDiff / 60) * 36
-      })
-
-      const vaultData = await vault.fetch()
-      const alphaAliensCount = vaultData.alphaAliensCount
-      const normalAliensCount = vaultData.normalAliensCount
-      const totalQuality = alphaAliensCount * 6 + normalAliensCount * 5
-      let myQuality = 0
-
-      alienUserData.items.forEach((stakeItem) => {
-        myQuality += stakeItem.itemType.normalAlien ? 5 : 6
-      })
-
-      setAlienYieldedAmount(
-        (vaultData.aliensPoolAmount.toNumber() * myQuality) /
-          totalQuality /
-          100,
-      )
+          yieldedAmount += Math.floor(timeDiff / 60 / 3) * 36
+        })
+      }
       setCtznYieldedAmount(yieldedAmount)
+
+      yieldedAmount = 0
+      if (alienUserData && alienUserData.items) {
+        alienUserData.items.forEach((stakeItem) => {
+          const alien = vaultData.aliens.filter(
+            (alien) => alien.mint.toString() === stakeItem.mint.toString(),
+          )[0]
+          yieldedAmount += alien.earnedReward.toNumber()
+        })
+      }
+
+      setAlienYieldedAmount(yieldedAmount / 100)
     } catch (error) {
       console.log(error)
     }
@@ -241,7 +240,10 @@ const ShowNFTs = () => {
         )
       }
 
-      if (!selectedCtzns.length) return
+      if (!selectedCtzns.length) {
+        setLoading(false);
+        return
+      }
       await vault.stake(0, wallet, userAddress, selectedCtzns)
 
       fetchNFTs()
@@ -287,7 +289,10 @@ const ShowNFTs = () => {
         )
       }
 
-      if (!selectedAliens.length) return
+      if (!selectedAliens.length) {
+        setLoading(false)
+        return
+      }
       await vault.stake(1, wallet, userAddress, selectedAliens, alienTypes)
 
       fetchNFTs()
@@ -320,14 +325,17 @@ const ShowNFTs = () => {
         )
       }
 
-      if (!selectedCtzns.length) return
+      if (!selectedCtzns.length) {
+        setLoading(false)
+        return
+      }
 
       const stakeAccounts = []
       for (const nft of selectedCtzns) {
         const idx = stakedCtzns.map((nft) => nft.mint).indexOf(nft)
         stakeAccounts.push(ctznAccounts[idx])
       }
-      await vault.unstake(wallet, userAddress, stakeAccounts)
+      await vault.unstake(wallet, userAddress, stakeAccounts, 0)
 
       fetchNFTs()
       fetchUserData()
@@ -359,14 +367,17 @@ const ShowNFTs = () => {
         )
       }
 
-      if (!selectedAliens.length) return
+      if (!selectedAliens.length) {
+        setLoading(false)
+        return
+      }
 
       const stakeAccounts = []
       for (const nft of selectedAliens) {
         const idx = stakedAliens.map((nft) => nft.mint).indexOf(nft)
         stakeAccounts.push(alienAccounts[idx])
       }
-      await vault.unstake(wallet, userAddress, stakeAccounts)
+      await vault.unstake(wallet, userAddress, stakeAccounts, 1)
 
       fetchNFTs()
       fetchUserData()
@@ -386,6 +397,8 @@ const ShowNFTs = () => {
         program,
         userType,
       )
+
+      console.log(await vault.fetchUser(userAddress))
       await vault.claim(wallet, userAddress, userType)
       fetchUserData()
     } catch (error) {
@@ -444,7 +457,7 @@ const ShowNFTs = () => {
                 <button
                   onClick={() => {
                     if (!stakedCtzns.length || !ctznYieldedAmount) return
-                    handleClickHarvest(1)
+                    handleClickHarvest(0)
                   }}
                   className="h-[80px] px-[20px] py-[10px] rounded-[10px] bg-[#ffa91e] hover:bg-[#ef990e] active:bg-[#ffa91e] md:text-[38px] text-[28px] text-white leading-[1]"
                 >
@@ -488,10 +501,12 @@ const ShowNFTs = () => {
                 {stakedAliens.length}
               </div>
               <div className="text-center md:text-[75px] text-[60px]">
-                {alienYieldedAmount.toLocaleString('en-us', {
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 2,
-                })}
+                {!alienYieldedAmount
+                  ? 0
+                  : alienYieldedAmount.toLocaleString('en-us', {
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 2,
+                    })}
               </div>
             </div>
             <div className="lg:my-[60px] my-[30px] grid grid-cols-2">
@@ -527,7 +542,7 @@ const ShowNFTs = () => {
       {wallet.publicKey && (
         <div>
           {loading && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="fixed z-50 inset-0 bg-black bg-opacity-50 flex items-center justify-center">
               <img className={styles.loadingIcon} src="/loading.svg" alt="" />
             </div>
           )}
