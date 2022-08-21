@@ -282,7 +282,10 @@ export class Vault {
     alienTypes,
   ) {
     const txs = [];
-    for (const nft of nfts) {
+    let count = 0;
+    let tx;
+    for (let i = 0; i < nfts.length; i++) {
+      const nft = nfts[i];
       const mint = new Mint(nft, null, this.program, 0);
       const stakeAccount = await mint.getAssociatedTokenAddress(curAuthoriy.publicKey);
       console.log(stakeAccount.toString());
@@ -292,7 +295,7 @@ export class Vault {
         type = alienTypes[nft.toString()] === "ALPHA CTZN" ? 2 : 1;
       }
 
-      const tx = await this.program.transaction.stake(type, {
+      const oneTx = await this.program.transaction.stake(type, {
         accounts: {
           staker: curAuthoriy.publicKey,
           vault: this.key,
@@ -303,17 +306,29 @@ export class Vault {
           systemProgram: SystemProgram.programId,
         }
       });
-      let blockhash = await this.program.provider.connection.getLatestBlockhash('finalized');
-      tx.recentBlockhash = blockhash.blockhash;
-      tx.feePayer = curAuthoriy.publicKey;
-      txs.push(tx);
+
+      if (count == 0) {
+        tx = oneTx;
+      } else {
+        tx.instructions = tx.instructions.concat(oneTx.instructions);
+      }
+
+      count++;
+
+      if (count === 10 || i + 1 === nfts.length) {
+        let blockhash = await this.program.provider.connection.getLatestBlockhash('finalized');
+        tx.recentBlockhash = blockhash.blockhash;
+        tx.feePayer = curAuthoriy.publicKey;
+        txs.push(tx);
+        count = 0;
+      }
     }
-    
+
     const signedTxs = await curAuthoriy.signAllTransactions(txs);
     // console.log(signedTxs)
     for (const tx of signedTxs) {
       const txSignature = await this.program.provider.connection.sendRawTransaction(tx.serialize());
-      await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");  
+      await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");
       console.log(txSignature);
     }
   }
@@ -350,7 +365,7 @@ export class Vault {
     const aliensPoolAccount = await this.mint.getAssociatedTokenAddress(aliensPool);
     const godsPoolAccount = await this.mint.getAssociatedTokenAddress(godsPool);
 
-    const tx = await this.program.transaction.claim(userType, {
+    let tx = await this.program.transaction.claim(userType, {
       accounts: {
         claimer: authority.publicKey,
         vault: this.key,
@@ -375,7 +390,9 @@ export class Vault {
     tx.feePayer = authority.publicKey;
     txs.push(tx);
 
-    for (const stakeAccount of stakeAccounts) {
+    let count = 0;
+    for (let i = 0; i < stakeAccounts.length; i++) {
+      const stakeAccount = stakeAccounts[i];
       const [vaultPda, vaultStakeBump] = await getStakeAddress(
         this.key,
         authority.publicKey,
@@ -383,7 +400,7 @@ export class Vault {
         this.program
       );
 
-      const tx = await this.program.transaction.unstake(vaultStakeBump, {
+      const oneTx = await this.program.transaction.unstake(vaultStakeBump, {
         accounts: {
           staker: authority.publicKey,
           vault: this.key,
@@ -394,10 +411,22 @@ export class Vault {
           systemProgram: SystemProgram.programId,
         }
       });
-      let blockhash = await this.program.provider.connection.getLatestBlockhash('finalized');
-      tx.recentBlockhash = blockhash.blockhash;
-      tx.feePayer = authority.publicKey;
-      txs.push(tx);
+
+      if (count == 0) {
+        tx = oneTx;
+      } else {
+        tx.instructions = tx.instructions.concat(oneTx.instructions);
+      }
+
+      count++;
+
+      if (count === 10 || i + 1 === stakeAccounts.length) {
+        let blockhash = await this.program.provider.connection.getLatestBlockhash('finalized');
+        tx.recentBlockhash = blockhash.blockhash;
+        tx.feePayer = authority.publicKey;
+        txs.push(tx);
+        count = 0;
+      }
     }
 
     const signedTxs = await authority.signAllTransactions(txs);
