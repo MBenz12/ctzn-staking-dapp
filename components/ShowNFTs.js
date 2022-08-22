@@ -18,8 +18,8 @@ import {
   getVault,
   toPublicKey,
 } from '../fixtures/lib'
-const candyMachine = 'CUDGnANU3DEFcGEsppXwqjTD9nUFCFbBmrBUVjPfwPHb'
-// const candyMachine = "8XrvWo4ywz6kzN7cDekmAZYyfCP8ZMQHLaaqkxFp9vhH";
+// const candyMachine = 'CUDGnANU3DEFcGEsppXwqjTD9nUFCFbBmrBUVjPfwPHb'
+const candyMachine = "8XrvWo4ywz6kzN7cDekmAZYyfCP8ZMQHLaaqkxFp9vhH";
 
 const ShowNFTs = () => {
   const wallet = useWallet()
@@ -82,7 +82,7 @@ const ShowNFTs = () => {
           const timeDiff =
             new Date().getTime() / 1000 - stakeItem.lastClaimedTime.toNumber()
 
-          yieldedAmount += Math.floor(timeDiff / 60 / 3) * 36
+          yieldedAmount += Math.floor(timeDiff / 3600 / 24) * 36
         })
       }
       setCtznYieldedAmount(yieldedAmount)

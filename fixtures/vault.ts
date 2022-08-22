@@ -229,12 +229,10 @@ export class Vault {
   }
 
   async fund({
-    authority,
     funder,
     funderAccount,
     amount,
   }: {
-    authority: PublicKey;
     funder: Keypair | WalletContextState;
     funderAccount: PublicKey;
     amount: anchor.BN;

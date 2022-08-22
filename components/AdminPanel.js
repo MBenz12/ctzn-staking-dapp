@@ -52,7 +52,7 @@ const AdminPanel = () => {
     const { vault } = await createVault(program, wallet);
     setVault(vault);
     console.log("vault key", vault.key.toString());
-    alert("created successfully! vault key: ", vault.key.toString());
+    alert("created successfully!");
   }
 
   const handleFundClick = async() => {
@@ -71,11 +71,11 @@ const AdminPanel = () => {
     console.log(amount);
     // const amount = new anchor.BN("1000000");
     await vault.fund({ 
-      authority: wallet.publicKey, 
       funder: wallet, 
       funderAccount,
       amount: new anchor.BN(amount)
     });
+    alert("funded successfully!");
     console.log("funded successfully!");
   }
 

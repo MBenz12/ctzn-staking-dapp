@@ -38,7 +38,7 @@ export default function Home() {
   //       break;
   //   }
   // };
-  const [network] = useState(WalletAdapterNetwork.Devnet);
+  const [network] = useState(WalletAdapterNetwork.Mainnet);
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
 
   const wallets = useMemo(

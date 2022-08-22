@@ -165,12 +165,12 @@ export async function createVault(program: Program<NftStaking>, wallet: WalletCo
     mint = await Mint.create(program, wallet);
   }
   console.log('mint', mint.key.toString());
-  const tokenAccount = await mint.createAssociatedAccount(
-    wallet.publicKey
-  );
-  await mint.mintTokens(tokenAccount, 1000000);
+  // const tokenAccount = await mint.createAssociatedAccount(
+  //   wallet.publicKey
+  // );
+  // await mint.mintTokens(tokenAccount, 1000000);
 
-  console.log('tokenAccount', tokenAccount.key.toString());
+  // console.log('tokenAccount', tokenAccount.key.toString());
   // create vault
   const { vault } = await Vault.create({
     authority: wallet,
