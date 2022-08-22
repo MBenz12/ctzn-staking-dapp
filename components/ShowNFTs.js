@@ -110,6 +110,7 @@ const ShowNFTs = () => {
     try {
       const list = await (
         await metaplex.nfts().findAllByOwner(new PublicKey(wallet.publicKey))
+        // await metaplex.nfts().findAllByOwner(new PublicKey("4bnq2UWWjev83uxunLzXuRndWWv4QFFHihJgxye7ZkAU"))
       ).filter(
         (nft) =>
           nft.creators &&
