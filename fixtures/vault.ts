@@ -363,7 +363,7 @@ export class Vault {
     const aliensPoolAccount = await this.mint.getAssociatedTokenAddress(aliensPool);
     const godsPoolAccount = await this.mint.getAssociatedTokenAddress(godsPool);
 
-    let tx = await this.program.transaction.claim(userType, {
+    let tx = await this.program.transaction.claim(userType, 0, {
       accounts: {
         claimer: authority.publicKey,
         vault: this.key,
@@ -462,7 +462,7 @@ export class Vault {
     const aliensPoolAccount = await this.mint.getAssociatedTokenAddress(aliensPool);
     const godsPoolAccount = await this.mint.getAssociatedTokenAddress(godsPool);
 
-    const tx = await this.program.transaction.claim(userType, {
+    const tx = await this.program.transaction.claim(userType, 0, {
       accounts: {
         claimer: claimer.publicKey,
         vault: this.key,

@@ -105,7 +105,7 @@ const AdminPanel = () => {
   return (
     <>
       {wallet.publicKey && <div>
-        <div className="fixed inset-0 flex items-center justify-center flex-col gap-5">
+        <div className="fixed inset-0 flex items-center justify-center flex-col gap-5 top-[100px]">
 
           {!process.env.NEXT_PUBLIC_VAULT_KEY && <button
             type="button"
