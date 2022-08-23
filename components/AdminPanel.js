@@ -24,16 +24,15 @@ const AdminPanel = () => {
   anchor.setProvider(provider);
   const program = new Program(NftStaking, process.env.NEXT_PUBLIC_PROGRAM_ID, provider);
 
-  const [address, setAddress] = useState(
-    wallet.publicKey?.toString()
-  );
   const [loading, setLoading] = useState(false);
 
   const [vault, setVault] = useState();
 
   useEffect(() => {
-    setAddress(wallet.publicKey?.toString());
-  }, [wallet]);
+    if (wallet.publicKey && vault) {
+      fetchData();
+    }
+  }, [wallet.publicKey, vault]);
 
   useEffect(() => {
     const createVault = async () => {
@@ -47,6 +46,24 @@ const AdminPanel = () => {
 
 
   // }, [address]);
+  const [stakedAlienMints, setStakedAlienMints] = useState([])
+  const [stakedAlienAccounts, setStakedAlienAccounts] = useState([])
+
+  const fetchData = async () => {
+    try {
+      const vaultData = await vault.fetch()
+      if (vaultData && vaultData.aliens) {
+        const mints = [];
+        const mintAccounts = [];
+        vaultData.aliens.forEach(alien => {
+          mints.push(alien.mint);
+          mintAccounts.push(alien.mintAccount);
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const handleCreateVaultClick = async () => {
     const { vault } = await createVault(program, wallet);
@@ -82,13 +99,12 @@ const AdminPanel = () => {
   }
 
   const handleCreateMintsClick = async () => {
-    
-    
+  
   }
 
   return (
     <>
-      {address && <div>
+      {wallet.publicKey && <div>
         <div className="fixed inset-0 flex items-center justify-center flex-col gap-5">
 
           <button
