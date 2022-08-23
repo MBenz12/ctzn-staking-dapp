@@ -63,9 +63,11 @@ const AdminPanel = () => {
       wallet.publicKey
     );
 
-    // if (await checkTokenAccounts(program, wallet.publicKey, funderAccount) === false) {
-    //   await mint.createAssociatedAccount(wallet.publicKey);
-    // }
+    mint.authority = wallet;
+
+    if (await checkTokenAccounts(program, wallet.publicKey, funderAccount) === false) {
+      await mint.createAssociatedAccount(wallet.publicKey);
+    }
     console.log(mint.key.toString());
     const amount = await getTokenAmounts(program, wallet.publicKey, funderAccount);
     console.log(amount);
