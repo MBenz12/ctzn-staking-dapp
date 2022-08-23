@@ -97,7 +97,7 @@ const ShowNFTs = () => {
         })
       }
 
-      setAlienYieldedAmount(yieldedAmount / 100)
+      setAlienYieldedAmount(yieldedAmount / 1000000)
     } catch (error) {
       console.log(error)
     }

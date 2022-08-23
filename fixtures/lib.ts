@@ -158,7 +158,7 @@ export async function createVault(program: Program<NftStaking>, wallet: WalletCo
       new PublicKey(process.env.NEXT_PUBLIC_FLWR_MINT),
       null,
       program,
-      2
+      6
     );
   }
   else {

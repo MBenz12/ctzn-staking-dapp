@@ -35,7 +35,7 @@ class Mint {
     program: Program<NftStaking>,
     authority: Keypair | WalletContextState = Keypair.generate(),
     freezeAuthority: PublicKey | null = null,
-    decimals: number = 2,
+    decimals: number = 6,
   ): Promise<Mint> {
     console.log("creating mint...");
     await spawnMoney(program, authority.publicKey, 1);
