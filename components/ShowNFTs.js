@@ -18,8 +18,8 @@ import {
   getVault,
   toPublicKey,
 } from '../fixtures/lib'
-const candyMachine = 'CUDGnANU3DEFcGEsppXwqjTD9nUFCFbBmrBUVjPfwPHb'
-// const candyMachine = "8XrvWo4ywz6kzN7cDekmAZYyfCP8ZMQHLaaqkxFp9vhH";
+// const candyMachine = 'CUDGnANU3DEFcGEsppXwqjTD9nUFCFbBmrBUVjPfwPHb'
+const candyMachine = "8XrvWo4ywz6kzN7cDekmAZYyfCP8ZMQHLaaqkxFp9vhH";
 
 const Timer = ({ stakedTime }) => {
   const [remainedTime, setRemainedTime] = useState(0)
