@@ -559,9 +559,7 @@ const ShowNFTs = () => {
                 {stakedAliens.length}
               </div>
               <div className="text-center md:text-[75px] text-[60px]">
-                {!alienYieldedAmount
-                  ? 0
-                  : alienYieldedAmount.toLocaleString('en-us', {
+                {(alienYieldedAmount || 0).toLocaleString('en-us', {
                       minimumFractionDigits: 6,
                       maximumFractionDigits: 6,
                     })}
