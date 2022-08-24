@@ -29,7 +29,10 @@ const Timer = ({ stakedTime }) => {
     )
   }
   useEffect(() => {
-    setInterval(timeout, 1000)
+    const timer = setInterval(timeout, 1000)
+    return (() => {
+      clearInterval(timer);
+    })
   }, [])
   return (
     <>
@@ -45,6 +48,8 @@ const Timer = ({ stakedTime }) => {
 
 const CtznYielded = ({ ctznUserData }) => {
   const [ctznYieldedAmount, setCtznYieldedAmount] = useState(0)
+  const [timerId, setTimerId] = useState()
+
   const timeout = () => {
     let yieldedAmount = 0
 
@@ -59,7 +64,8 @@ const CtznYielded = ({ ctznUserData }) => {
   }
   useEffect(() => {
     if (ctznUserData && ctznUserData.items) {
-      setInterval(timeout, 1000)
+      if (timerId) clearInterval(timerId)
+      setTimerId(setInterval(timeout, 1000))
     }
   }, [ctznUserData])
   return (
