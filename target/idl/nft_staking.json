@@ -209,7 +209,7 @@
         {
           "name": "staker",
           "isMut": true,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "vault",
@@ -246,6 +246,10 @@
         {
           "name": "vaultStakeBump",
           "type": "u8"
+        },
+        {
+          "name": "manually",
+          "type": "bool"
         }
       ],
       "returns": null
@@ -749,8 +753,5 @@
       "name": "CannotUnstakeAlien",
       "msg": "Cannot Unstake Alien untill 2 days reward accrued"
     }
-  ],
-  "metadata": {
-    "address": "HES9CZTGAyJvpyHaVEAVxjfSHNw1wY27eeMZJBefFKgk"
-  }
+  ]
 }
