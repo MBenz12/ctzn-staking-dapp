@@ -19,7 +19,7 @@ import {
   toPublicKey,
 } from '../fixtures/lib'
 // const candyMachine = 'CUDGnANU3DEFcGEsppXwqjTD9nUFCFbBmrBUVjPfwPHb'
-const candyMachine = "8XrvWo4ywz6kzN7cDekmAZYyfCP8ZMQHLaaqkxFp9vhH";
+const candyMachine = '8XrvWo4ywz6kzN7cDekmAZYyfCP8ZMQHLaaqkxFp9vhH'
 
 const Timer = ({ stakedTime }) => {
   const [remainedTime, setRemainedTime] = useState(0)
@@ -30,9 +30,9 @@ const Timer = ({ stakedTime }) => {
   }
   useEffect(() => {
     const timer = setInterval(timeout, 1000)
-    return (() => {
-      clearInterval(timer);
-    })
+    return () => {
+      clearInterval(timer)
+    }
   }, [])
   return (
     <>
@@ -90,7 +90,9 @@ const ShowNFTs = () => {
   )
 
   const { metaplex } = useMetaplex()
-  const [stakeDialogOpen, setStakeDialogOpen] = useState(false)
+  const [selectDialogOpen, setSelectDialogOpen] = useState(false)
+  const [stakeCtznsDialogOpen, setStakeCtznsDialogOpen] = useState(false)
+  const [stakeAliensDialogOpen, setStakeAliensDialogOpen] = useState(false)
   const [ctznDialogOpen, setCtznDialogOpen] = useState(false)
   const [alienDialogOpen, setAlienDialogOpen] = useState(false)
   const [stakedCtzns, setStakedCtzns] = useState([])
@@ -159,18 +161,17 @@ const ShowNFTs = () => {
   const fetchNFTs = async () => {
     setLoading(true)
     try {
-      const list = (
-        // await metaplex.nfts().findAllByOwner(new PublicKey("6EqHfjgsZQ5Y1u9k6M2xNw3EExAZdoFWmaAzrFtcghJd"))
+      const list = // await metaplex.nfts().findAllByOwner(new PublicKey("6EqHfjgsZQ5Y1u9k6M2xNw3EExAZdoFWmaAzrFtcghJd"))
+      (
         await metaplex.nfts().findAllByOwner(new PublicKey(wallet.publicKey))
+      ).filter(
+        (nft) =>
+          nft.creators &&
+          nft.creators.filter(
+            (creator) => creator.address.toString() === candyMachine,
+          ).length &&
+          nft.name,
       )
-        .filter(
-          (nft) =>
-            nft.creators &&
-            nft.creators.filter(
-              (creator) => creator.address.toString() === candyMachine,
-            ).length &&
-            nft.name,
-        )
 
       const types = {}
       list
@@ -481,8 +482,9 @@ const ShowNFTs = () => {
           <button
             type="button"
             onClick={() => {
-              if (!ctzns.length && !aliens.length) return
-              setStakeDialogOpen(true)
+              // if (!ctzns.length && !aliens.length) return
+              // setStakeDialogOpen(true)
+              setSelectDialogOpen(true)
               setSelectedNfts([])
             }}
             className="h-[80px] sm:w-[400px] w-[300px] rounded-[10px] bg-[#b11fff] hover:bg-[#a10fef] active:bg-[#b11fff] sm:text-[50px] text- text-white"
@@ -566,9 +568,9 @@ const ShowNFTs = () => {
               </div>
               <div className="text-center md:text-[75px] text-[60px]">
                 {(alienYieldedAmount || 0).toLocaleString('en-us', {
-                      minimumFractionDigits: 6,
-                      maximumFractionDigits: 6,
-                    })}
+                  minimumFractionDigits: 6,
+                  maximumFractionDigits: 6,
+                })}
               </div>
             </div>
             <div className="lg:my-[60px] my-[30px] grid grid-cols-2">
@@ -609,11 +611,77 @@ const ShowNFTs = () => {
             </div>
           )}
 
-          <Transition appear show={stakeDialogOpen}>
+          <Transition appear show={selectDialogOpen}>
             <Dialog
               as="div"
               className="relative z-10"
-              onClose={() => setStakeDialogOpen(false)}
+              onClose={() => setSelectDialogOpen(false)}
+            >
+              <Transition.Child
+                enter="ease-out duration-300"
+                enterFrom="opacity-0"
+                enterTo="opacity-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+              >
+                <div className="fixed inset-0 bg-black bg-opacity-25" />
+              </Transition.Child>
+
+              <div className="fixed inset-0 overflow-y-auto">
+                <div className="flex min-h-full items-center justify-center p-4 text-center">
+                  <Transition.Child
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0 scale-95"
+                    enterTo="opacity-100 scale-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100 scale-100"
+                    leaveTo="opacity-0 scale-95"
+                    className="w-full flex justify-center"
+                  >
+                    <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-2xl bg-[#5200B5]/[0.78] sm:p-6 p-2 text-left align-middle shadow-xl transition-all border-[5px] border-[#5200B5]/[0.88] flex flex-col space-y-5">
+                      <div className="flex justify-center items-center my-5 w-full flex-col space-y-10">
+                        <div
+                          onClick={() => {
+                            if (!ctzns.length) return
+                            setSelectDialogOpen(false)
+                            setStakeCtznsDialogOpen(true)
+                          }}
+                          className="cursor-pointer"
+                        >
+                          <img
+                            src="./ctzns.png"
+                            alt=""
+                            className="lg:w-[400px] md:w-[300px] w-[200px]"
+                          ></img>
+                        </div>
+                        <div
+                          onClick={() => {
+                            if (!aliens.length) return
+                            setSelectDialogOpen(false)
+                            setStakeAliensDialogOpen(true)
+                          }}
+                          className="cursor-pointer"
+                        >
+                          <img
+                            src="./aliens.png"
+                            alt=""
+                            className="lg:w-[400px] md:w-[300px] w-[200px]"
+                          ></img>
+                        </div>
+                      </div>
+                    </Dialog.Panel>
+                  </Transition.Child>
+                </div>
+              </div>
+            </Dialog>
+          </Transition>
+
+          <Transition appear show={stakeCtznsDialogOpen}>
+            <Dialog
+              as="div"
+              className="relative z-10"
+              onClose={() => setStakeCtznsDialogOpen(false)}
             >
               <Transition.Child
                 enter="ease-out duration-300"
@@ -698,6 +766,42 @@ const ShowNFTs = () => {
                           </div>
                         </div>
                       )}
+                    </Dialog.Panel>
+                  </Transition.Child>
+                </div>
+              </div>
+            </Dialog>
+          </Transition>
+
+          <Transition appear show={stakeAliensDialogOpen}>
+            <Dialog
+              as="div"
+              className="relative z-10"
+              onClose={() => setStakeAliensDialogOpen(false)}
+            >
+              <Transition.Child
+                enter="ease-out duration-300"
+                enterFrom="opacity-0"
+                enterTo="opacity-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+              >
+                <div className="fixed inset-0 bg-black bg-opacity-25" />
+              </Transition.Child>
+
+              <div className="fixed inset-0 overflow-y-auto">
+                <div className="flex min-h-full items-center justify-center p-4 text-center">
+                  <Transition.Child
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0 scale-95"
+                    enterTo="opacity-100 scale-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100 scale-100"
+                    leaveTo="opacity-0 scale-95"
+                    className="w-full flex justify-center"
+                  >
+                    <Dialog.Panel className="w-full max-w-5xl transform overflow-hidden rounded-2xl bg-[#5200B5]/[0.78] sm:p-6 p-2 text-left align-middle shadow-xl transition-all border-[5px] border-[#5200B5]/[0.88] flex flex-col space-y-5">
                       {!!aliens.length && (
                         <div>
                           <div className="flex items-center sm:space-x-5 my-5 w-full sm:flex-row flex-col space-y-2">
