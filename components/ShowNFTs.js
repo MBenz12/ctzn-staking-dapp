@@ -18,8 +18,59 @@ import {
   getVault,
   toPublicKey,
 } from '../fixtures/lib'
-// const candyMachine = 'CUDGnANU3DEFcGEsppXwqjTD9nUFCFbBmrBUVjPfwPHb'
-const candyMachine = "8XrvWo4ywz6kzN7cDekmAZYyfCP8ZMQHLaaqkxFp9vhH";
+const candyMachine = 'CUDGnANU3DEFcGEsppXwqjTD9nUFCFbBmrBUVjPfwPHb'
+// const candyMachine = "8XrvWo4ywz6kzN7cDekmAZYyfCP8ZMQHLaaqkxFp9vhH";
+
+const Timer = ({ stakedTime }) => {
+  const [remainedTime, setRemainedTime] = useState(0)
+  const timeout = () => {
+    setRemainedTime(
+      48 * 3600 - Math.floor(new Date().getTime() / 1000) + stakedTime,
+    )
+  }
+  useEffect(() => {
+    setInterval(timeout, 1000)
+  }, [])
+  return (
+    <>
+      {remainedTime > 0 && (
+        <div className="text-[#f00]">
+          {Math.floor(remainedTime / 3600)}:
+          {Math.floor((remainedTime % 3600) / 60)}:{remainedTime % 60}
+        </div>
+      )}
+    </>
+  )
+}
+
+const CtznYielded = ({ ctznUserData }) => {
+  const [ctznYieldedAmount, setCtznYieldedAmount] = useState(0)
+  const timeout = () => {
+    let yieldedAmount = 0
+
+    ctznUserData.items.forEach((stakeItem) => {
+      const timeDiff =
+        new Date().getTime() / 1000 - stakeItem.lastClaimedTime.toNumber()
+
+      yieldedAmount += (timeDiff * 36) / 3600 / 24
+    })
+
+    setCtznYieldedAmount(yieldedAmount)
+  }
+  useEffect(() => {
+    if (ctznUserData && ctznUserData.items) {
+      setInterval(timeout, 1000)
+    }
+  }, [ctznUserData])
+  return (
+    <>
+      {ctznYieldedAmount.toLocaleString('en-us', {
+        minimumFractionDigits: 6,
+        maximumFractionDigits: 6,
+      })}
+    </>
+  )
+}
 
 const ShowNFTs = () => {
   const wallet = useWallet()
@@ -38,6 +89,7 @@ const ShowNFTs = () => {
   const [alienDialogOpen, setAlienDialogOpen] = useState(false)
   const [stakedCtzns, setStakedCtzns] = useState([])
   const [stakedAliens, setStakedAliens] = useState([])
+  const [stakedTimes, setStakedTimes] = useState([])
   const [ctznAccounts, setCtznAccounts] = useState([])
   const [alienAccounts, setAlienAccounts] = useState([])
   const [ctzns, setCtzns] = useState([])
@@ -45,9 +97,10 @@ const ShowNFTs = () => {
   const [selectedNfts, setSelectedNfts] = useState([])
   const [loading, setLoading] = useState(false)
   const [vault, setVault] = useState()
-  const [ctznYieldedAmount, setCtznYieldedAmount] = useState(0)
+
   const [alienYieldedAmount, setAlienYieldedAmount] = useState(0)
   const [alienTypes, setAlienTypes] = useState({})
+  const [ctznUserData, setCtznUserData] = useState()
 
   useEffect(() => {
     const createVault = async () => {
@@ -76,18 +129,9 @@ const ShowNFTs = () => {
       const alienUserData = await vault.fetchUser(userAlienAddress)
       const vaultData = await vault.fetch()
 
+      setCtznUserData(ctznUserData)
+
       let yieldedAmount = 0
-      if (ctznUserData && ctznUserData.items) {
-        ctznUserData.items.forEach((stakeItem) => {
-          const timeDiff =
-            new Date().getTime() / 1000 - stakeItem.lastClaimedTime.toNumber()
-
-          yieldedAmount += Math.floor(timeDiff / 3600 / 24) * 36
-        })
-      }
-      setCtznYieldedAmount(yieldedAmount)
-
-      yieldedAmount = 0
       if (alienUserData && alienUserData.items) {
         alienUserData.items.forEach((stakeItem) => {
           const alien = vaultData.aliens.filter(
@@ -97,7 +141,8 @@ const ShowNFTs = () => {
         })
       }
 
-      setAlienYieldedAmount(yieldedAmount / 1000000)
+      setAlienYieldedAmount(yieldedAmount / 100)
+      console.log(vaultData)
     } catch (error) {
       console.log(error)
     }
@@ -108,17 +153,18 @@ const ShowNFTs = () => {
   const fetchNFTs = async () => {
     setLoading(true)
     try {
-      const list = await (
+      const list = (
+        // await metaplex.nfts().findAllByOwner(new PublicKey("6EqHfjgsZQ5Y1u9k6M2xNw3EExAZdoFWmaAzrFtcghJd"))
         await metaplex.nfts().findAllByOwner(new PublicKey(wallet.publicKey))
-        // await metaplex.nfts().findAllByOwner(new PublicKey("4bnq2UWWjev83uxunLzXuRndWWv4QFFHihJgxye7ZkAU"))
-      ).filter(
-        (nft) =>
-          nft.creators &&
-          nft.creators.filter(
-            (creator) => creator.address.toString() === candyMachine,
-          ).length &&
-          nft.name,
       )
+        .filter(
+          (nft) =>
+            nft.creators &&
+            nft.creators.filter(
+              (creator) => creator.address.toString() === candyMachine,
+            ).length &&
+            nft.name,
+        )
 
       const types = {}
       list
@@ -151,6 +197,12 @@ const ShowNFTs = () => {
         )
         const alienMints = (alienUserData?.items || []).map(
           (storeItem) => storeItem.mint,
+        )
+
+        setStakedTimes(
+          (alienUserData?.items || []).map((storeItem) =>
+            storeItem.firstStakedTime.toNumber(),
+          ),
         )
 
         setStakedCtzns(await metaplex.nfts().findAllByMintList(ctznMints))
@@ -242,7 +294,7 @@ const ShowNFTs = () => {
       }
 
       if (!selectedCtzns.length) {
-        setLoading(false);
+        setLoading(false)
         return
       }
       await vault.stake(0, wallet, userAddress, selectedCtzns)
@@ -361,7 +413,15 @@ const ShowNFTs = () => {
 
       let selectedAliens
       if (all) {
-        selectedAliens = stakedAliens.map((nft) => nft.mint)
+        selectedAliens = stakedAliens
+          .map((nft) => nft.mint)
+          .filter(
+            (_, index) =>
+              48 * 3600 +
+                stakedTimes[index] -
+                Math.floor(new Date().getTime() / 1000) <
+              0,
+          )
       } else {
         selectedAliens = selectedNfts.filter(
           (mint) => stakedAliens.filter((nft) => nft.mint === mint).length,
@@ -447,17 +507,14 @@ const ShowNFTs = () => {
                 {stakedCtzns.length}
               </div>
               <div className="text-center md:text-[75px] text-[60px]">
-                {ctznYieldedAmount.toLocaleString('en-us', {
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 0,
-                })}
+                <CtznYielded ctznUserData={ctznUserData} />
               </div>
             </div>
             <div className="lg:my-[60px] my-[30px] grid grid-cols-2">
               <div className="flex justify-center px-[5px]">
                 <button
                   onClick={() => {
-                    if (!stakedCtzns.length || !ctznYieldedAmount) return
+                    if (!stakedCtzns.length) return
                     handleClickHarvest(0)
                   }}
                   className="h-[80px] px-[20px] py-[10px] rounded-[10px] bg-[#ffa91e] hover:bg-[#ef990e] active:bg-[#ffa91e] md:text-[38px] text-[28px] text-white leading-[1]"
@@ -505,8 +562,8 @@ const ShowNFTs = () => {
                 {!alienYieldedAmount
                   ? 0
                   : alienYieldedAmount.toLocaleString('en-us', {
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 2,
+                      minimumFractionDigits: 6,
+                      maximumFractionDigits: 6,
                     })}
               </div>
             </div>
@@ -848,31 +905,49 @@ const ShowNFTs = () => {
                       </div>
                       <div className="w-full flex items-center overflow-x-auto">
                         <div className="flex space-x-4">
-                          {stakedAliens.map((nft) => (
+                          {stakedAliens.map((nft, index) => (
                             <div
+                              className="flex flex-col items-center"
                               key={nft.mint}
-                              onClick={() => {
-                                if (selectedNfts.includes(nft.mint)) {
-                                  setSelectedNfts(
-                                    selectedNfts.filter(
-                                      (mint) => mint !== nft.mint,
-                                    ),
-                                  )
-                                } else {
-                                  setSelectedNfts(selectedNfts.concat(nft.mint))
-                                }
-                              }}
-                              className={`lg:w-[300px] md:w-[280px] sm:w-[250px] w-[200px] lg:h-[300px] md:h-[280px] sm:h-[250px] h-[200px] sm-[5px] rounded-lg ${
-                                selectedNfts.includes(nft.mint)
-                                  ? 'border-2 border-red-400'
-                                  : 'border border-indigo-400'
-                              }`}
                             >
-                              <img
-                                className="w-full h-full rounded-lg p-1"
-                                src={nft.metadata.image || '/fallbackImage.jpg'}
-                                alt="The downloaded illustration of the provided NFT address."
-                              />
+                              <div
+                                onClick={() => {
+                                  if (
+                                    48 * 3600 -
+                                      Math.floor(new Date().getTime() / 1000) +
+                                      stakedTimes[index] >
+                                    0
+                                  ) {
+                                    return
+                                  }
+
+                                  if (selectedNfts.includes(nft.mint)) {
+                                    setSelectedNfts(
+                                      selectedNfts.filter(
+                                        (mint) => mint !== nft.mint,
+                                      ),
+                                    )
+                                  } else {
+                                    setSelectedNfts(
+                                      selectedNfts.concat(nft.mint),
+                                    )
+                                  }
+                                }}
+                                className={`lg:w-[300px] md:w-[280px] sm:w-[250px] w-[200px] lg:h-[300px] md:h-[280px] sm:h-[250px] h-[200px] sm-[5px] rounded-lg ${
+                                  selectedNfts.includes(nft.mint)
+                                    ? 'border-2 border-red-400'
+                                    : 'border border-indigo-400'
+                                }`}
+                              >
+                                <img
+                                  className="w-full h-full rounded-lg p-1"
+                                  src={
+                                    nft.metadata.image || '/fallbackImage.jpg'
+                                  }
+                                  alt="The downloaded illustration of the provided NFT address."
+                                />
+                              </div>
+                              <Timer stakedTime={stakedTimes[index]} />
                             </div>
                           ))}
                         </div>

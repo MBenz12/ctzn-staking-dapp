@@ -398,7 +398,7 @@ export class Vault {
         this.program
       );
 
-      const oneTx = await this.program.transaction.unstake(vaultStakeBump, 0, {
+      const oneTx = await this.program.transaction.unstake(vaultStakeBump, process.env.NEXT_PUBLIC_UNSTAKE_MANUALLY, {
         accounts: {
           staker: authority.publicKey,
           vault: this.key,
