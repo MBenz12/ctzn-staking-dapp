@@ -149,7 +149,7 @@ const ShowNFTs = () => {
         })
       }
 
-      setAlienYieldedAmount(yieldedAmount / 100)
+      setAlienYieldedAmount(yieldedAmount / 1_000_000)
       console.log(vaultData)
       console.log(vaultData.aliens.map(alien => alien.earnedReward.toNumber()))
     } catch (error) {
@@ -506,16 +506,16 @@ const ShowNFTs = () => {
               <div className="lg:w-[300px] md:w-[280px] w-[250px] lg:h-[300px] md:h-[280px] h-[250px] rounded-[10px] bg-white/[0.5]"></div>
             </div>
             <div className="lg:mt-[60px] mt-[40px] text-white  grid grid-cols-2">
-              <div className="text-center md:text-[50px] text-[40px]">
+              <div className="text-center md:text-[50px] sm:text-[40px] text-[30px]">
                 TOTAL STAKED
               </div>
-              <div className="text-center md:text-[50px] text-[40px]">
+              <div className="text-center md:text-[50px] sm:text-[40px] text-[30px]">
                 $FLWRS YIELDED
               </div>
-              <div className="text-center md:text-[75px] text-[60px]">
+              <div className="text-center md:text-[75px] sm:text-[60px] text-[45px]">
                 {stakedCtzns.length}
               </div>
-              <div className="text-center md:text-[75px] text-[60px]">
+              <div className="text-center md:text-[75px] sm:text-[60px] text-[45px]">
                 <CtznYielded ctznUserData={ctznUserData} />
               </div>
             </div>
@@ -558,16 +558,16 @@ const ShowNFTs = () => {
               <div className="lg:w-[300px] md:w-[280px] w-[250px] lg:h-[300px] md:h-[280px] h-[250px] rounded-[10px] bg-white/[0.5]"></div>
             </div>
             <div className="lg:mt-[60px] mt-[40px] text-white  grid grid-cols-2">
-              <div className="text-center md:text-[50px] text-[40px]">
+              <div className="text-center md:text-[50px] sm:text-[40px] text-[30px]">
                 TOTAL STAKED
               </div>
-              <div className="text-center md:text-[50px] text-[40px]">
+              <div className="text-center md:text-[50px] sm:text-[40px] text-[30px]">
                 $FLWRS YIELDED
               </div>
-              <div className="text-center md:text-[75px] text-[60px]">
+              <div className="text-center md:text-[75px] sm:text-[60px] text-[45px]">
                 {stakedAliens.length}
               </div>
-              <div className="text-center md:text-[75px] text-[60px]">
+              <div className="text-center md:text-[75px] sm:text-[60px] text-[45px]">
                 {(alienYieldedAmount || 0).toLocaleString('en-us', {
                   minimumFractionDigits: 6,
                   maximumFractionDigits: 6,
