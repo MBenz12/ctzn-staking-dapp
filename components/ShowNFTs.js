@@ -151,6 +151,7 @@ const ShowNFTs = () => {
 
       setAlienYieldedAmount(yieldedAmount / 100)
       console.log(vaultData)
+      console.log(vaultData.aliens.map(alien => alien.earnedReward.toNumber()))
     } catch (error) {
       console.log(error)
     }

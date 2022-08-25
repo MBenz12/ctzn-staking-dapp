@@ -96,6 +96,9 @@ export class Vault {
     const godsPoolAccount = await mint.getAssociatedTokenAddress(godsPool);
 
     let txSignature;
+
+
+    
     if ("secretKey" in authority) {
       txSignature = await program.rpc.createVault(
         ctzns_pool_bump,
