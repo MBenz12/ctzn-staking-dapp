@@ -309,7 +309,8 @@ const ShowNFTs = () => {
 
       fetchNFTs()
       fetchUserData()
-      setStakeDialogOpen(false)
+      // setStakeCtznsDialogOpen(false)
+      // setSelectDialogOpen(false)
     } catch (error) {
       console.log(error)
     }
@@ -358,7 +359,8 @@ const ShowNFTs = () => {
 
       fetchNFTs()
       fetchUserData()
-      setStakeDialogOpen(false)
+      // setStakeAliensDialogOpen(false)
+      // setSelectDialogOpen(false)
     } catch (error) {
       console.log(error)
     }
@@ -645,7 +647,6 @@ const ShowNFTs = () => {
                         <div
                           onClick={() => {
                             if (!ctzns.length) return
-                            setSelectDialogOpen(false)
                             setStakeCtznsDialogOpen(true)
                           }}
                           className="cursor-pointer"
@@ -659,7 +660,6 @@ const ShowNFTs = () => {
                         <div
                           onClick={() => {
                             if (!aliens.length) return
-                            setSelectDialogOpen(false)
                             setStakeAliensDialogOpen(true)
                           }}
                           className="cursor-pointer"
