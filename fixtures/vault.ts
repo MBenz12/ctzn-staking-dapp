@@ -98,7 +98,7 @@ export class Vault {
     let txSignature;
 
 
-    
+
     if ("secretKey" in authority) {
       txSignature = await program.rpc.createVault(
         ctzns_pool_bump,
@@ -221,7 +221,7 @@ export class Vault {
           systemProgram: SystemProgram.programId,
         },
       });
-      txSignature = await (authority as WalletContextState).sendTransaction(tx, this.program.provider.connection);
+      txSignature = await (authority as WalletContextState).sendTransaction(tx, this.program.provider.connection, { skipPreflight: true} );
       await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");
     }
     return {
@@ -328,7 +328,7 @@ export class Vault {
     const signedTxs = await curAuthoriy.signAllTransactions(txs);
     // console.log(signedTxs)
     for (const tx of signedTxs) {
-      const txSignature = await this.program.provider.connection.sendRawTransaction(tx.serialize());
+      const txSignature = await this.program.provider.connection.sendRawTransaction(tx.serialize(), { skipPreflight: true });
       await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");
       console.log(txSignature);
     }
@@ -432,7 +432,7 @@ export class Vault {
 
     const signedTxs = await authority.signAllTransactions(txs);
     for (const tx of signedTxs) {
-      const txSignature = await this.program.provider.connection.sendRawTransaction(tx.serialize());
+      const txSignature = await this.program.provider.connection.sendRawTransaction(tx.serialize(), { skipPreflight: true });
       await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");
       console.log(txSignature);
     }
@@ -485,7 +485,7 @@ export class Vault {
       },
     });
 
-    const txSignature = await claimer.sendTransaction(tx, this.program.provider.connection);
+    const txSignature = await claimer.sendTransaction(tx, this.program.provider.connection, { skipPreflight: true} );
     await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");
   }
   /*
