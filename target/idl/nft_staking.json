@@ -313,6 +313,11 @@
           "isSigner": false
         },
         {
+          "name": "unstakeAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "associatedTokenProgram",
           "isMut": false,
           "isSigner": false
@@ -337,6 +342,10 @@
         {
           "name": "userType",
           "type": "u8"
+        },
+        {
+          "name": "all",
+          "type": "bool"
         }
       ],
       "returns": null

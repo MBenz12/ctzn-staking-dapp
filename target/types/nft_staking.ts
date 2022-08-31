@@ -313,6 +313,11 @@ export type NftStaking = {
           "isSigner": false
         },
         {
+          "name": "unstakeAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "associatedTokenProgram",
           "isMut": false,
           "isSigner": false
@@ -337,6 +342,10 @@ export type NftStaking = {
         {
           "name": "userType",
           "type": "u8"
+        },
+        {
+          "name": "all",
+          "type": "bool"
         }
       ],
       "returns": null
@@ -1071,6 +1080,11 @@ export const IDL: NftStaking = {
           "isSigner": false
         },
         {
+          "name": "unstakeAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "associatedTokenProgram",
           "isMut": false,
           "isSigner": false
@@ -1095,6 +1109,10 @@ export const IDL: NftStaking = {
         {
           "name": "userType",
           "type": "u8"
+        },
+        {
+          "name": "all",
+          "type": "bool"
         }
       ],
       "returns": null
