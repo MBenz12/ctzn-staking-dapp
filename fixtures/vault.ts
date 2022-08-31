@@ -341,6 +341,7 @@ export class Vault {
     userType: number,
   ): Promise<boolean> {
     const txs = [];
+
     const claimerAccount = await this.mint.getAssociatedTokenAddress(
       authority.publicKey
     );
@@ -365,35 +366,37 @@ export class Vault {
     const ctznsPoolAccount = await this.mint.getAssociatedTokenAddress(ctznsPool);
     const aliensPoolAccount = await this.mint.getAssociatedTokenAddress(aliensPool);
     const godsPoolAccount = await this.mint.getAssociatedTokenAddress(godsPool);
-
-    let tx = await this.program.transaction.claim(userType, {
-      accounts: {
-        claimer: authority.publicKey,
-        vault: this.key,
-        ctznsPool,
-        aliensPool,
-        godsPool,
-        rewardMint: this.mint.key,
-        ctznsPoolAccount,
-        aliensPoolAccount,
-        godsPoolAccount,
-        claimerAccount,
-        user,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        rent: SYSVAR_RENT_PUBKEY,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: SystemProgram.programId,
-      },
-    });
-
-    let blockhash = await this.program.provider.connection.getLatestBlockhash('finalized');
-    tx.recentBlockhash = blockhash.blockhash;
-    tx.feePayer = authority.publicKey;
-    txs.push(tx);
-
+    
     let count = 0;
     for (let i = 0; i < stakeAccounts.length; i++) {
-      const stakeAccount = stakeAccounts[i];
+      const stakeAccount = stakeAccounts[i];      
+  
+      let tx = await this.program.transaction.claim(userType, false, {
+        accounts: {
+          claimer: authority.publicKey,
+          vault: this.key,
+          ctznsPool,
+          aliensPool,
+          godsPool,
+          rewardMint: this.mint.key,
+          ctznsPoolAccount,
+          aliensPoolAccount,
+          godsPoolAccount,
+          claimerAccount,
+          user,
+          unstakeAccount: stakeAccount,
+          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+          rent: SYSVAR_RENT_PUBKEY,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          systemProgram: SystemProgram.programId,
+        },
+      });
+  
+      let blockhash = await this.program.provider.connection.getLatestBlockhash('finalized');
+      tx.recentBlockhash = blockhash.blockhash;
+      tx.feePayer = authority.publicKey;
+      // txs.push(tx);
+
       const [vaultPda, vaultStakeBump] = await getStakeAddress(
         this.key,
         authority.publicKey,
@@ -439,7 +442,7 @@ export class Vault {
     return true;
   }
 
-  async claim(claimer: WalletContextState, user: PublicKey, userType: number) {
+  async claim(claimer: WalletContextState, user: PublicKey, userType: number, unstakeAccount: PublicKey) {
     const claimerAccount = await this.mint.getAssociatedTokenAddress(
       claimer.publicKey
     );
@@ -465,7 +468,7 @@ export class Vault {
     const aliensPoolAccount = await this.mint.getAssociatedTokenAddress(aliensPool);
     const godsPoolAccount = await this.mint.getAssociatedTokenAddress(godsPool);
 
-    const tx = await this.program.transaction.claim(userType, {
+    const tx = await this.program.transaction.claim(userType, true, {
       accounts: {
         claimer: claimer.publicKey,
         vault: this.key,
@@ -477,6 +480,7 @@ export class Vault {
         aliensPoolAccount,
         godsPoolAccount,
         claimerAccount,
+        unstakeAccount,
         user,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         rent: SYSVAR_RENT_PUBKEY,

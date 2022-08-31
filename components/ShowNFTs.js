@@ -470,7 +470,7 @@ const ShowNFTs = () => {
       )
 
       console.log(await vault.fetchUser(userAddress))
-      await vault.claim(wallet, userAddress, userType)
+      await vault.claim(wallet, userAddress, userType, userType === 0 ? ctznAccounts[0] : alienAccounts[0])
       fetchUserData()
     } catch (error) {
       console.log(error)
