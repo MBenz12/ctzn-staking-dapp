@@ -255,6 +255,33 @@
       "returns": null
     },
     {
+      "name": "setRandom",
+      "accounts": [
+        {
+          "name": "claimer",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [],
+      "returns": null
+    },
+    {
       "name": "claim",
       "accounts": [
         {
@@ -678,6 +705,10 @@
           {
             "name": "earnedReward",
             "type": "u64"
+          },
+          {
+            "name": "rand",
+            "type": "u32"
           }
         ]
       }

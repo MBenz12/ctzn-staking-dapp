@@ -678,7 +678,7 @@ const ShowNFTs = () => {
             </Dialog>
           </Transition>
 
-          <Transition appear show={stakeCtznsDialogOpen}>
+          <Transition appear show={stakeCtznsDialogOpen && !!ctzns.length}>
             <Dialog
               as="div"
               className="relative z-10"
@@ -774,7 +774,7 @@ const ShowNFTs = () => {
             </Dialog>
           </Transition>
 
-          <Transition appear show={stakeAliensDialogOpen}>
+          <Transition appear show={stakeAliensDialogOpen && !!aliens.length}>
             <Dialog
               as="div"
               className="relative z-10"

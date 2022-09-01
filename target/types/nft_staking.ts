@@ -255,6 +255,33 @@ export type NftStaking = {
       "returns": null
     },
     {
+      "name": "setRandom",
+      "accounts": [
+        {
+          "name": "claimer",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [],
+      "returns": null
+    },
+    {
       "name": "claim",
       "accounts": [
         {
@@ -678,6 +705,10 @@ export type NftStaking = {
           {
             "name": "earnedReward",
             "type": "u64"
+          },
+          {
+            "name": "rand",
+            "type": "u32"
           }
         ]
       }
@@ -1022,6 +1053,33 @@ export const IDL: NftStaking = {
       "returns": null
     },
     {
+      "name": "setRandom",
+      "accounts": [
+        {
+          "name": "claimer",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [],
+      "returns": null
+    },
+    {
       "name": "claim",
       "accounts": [
         {
@@ -1445,6 +1503,10 @@ export const IDL: NftStaking = {
           {
             "name": "earnedReward",
             "type": "u64"
+          },
+          {
+            "name": "rand",
+            "type": "u32"
           }
         ]
       }

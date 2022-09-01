@@ -367,11 +367,22 @@ export class Vault {
     const aliensPoolAccount = await this.mint.getAssociatedTokenAddress(aliensPool);
     const godsPoolAccount = await this.mint.getAssociatedTokenAddress(godsPool);
     
+    let tx = await this.program.transaction.setRandom({
+      accounts: {
+        claimer: authority.publicKey,
+        vault: this.key,
+        user,
+        systemProgram: SystemProgram.programId,
+      }
+    });
+    let txSignature = await authority.sendTransaction(tx, this.program.provider.connection);
+    await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");
+
     let count = 0;
     for (let i = 0; i < stakeAccounts.length; i++) {
       const stakeAccount = stakeAccounts[i];      
   
-      let tx = await this.program.transaction.claim(userType, false, {
+      let claimTx = await this.program.transaction.claim(userType, false, {
         accounts: {
           claimer: authority.publicKey,
           vault: this.key,
@@ -391,11 +402,6 @@ export class Vault {
           systemProgram: SystemProgram.programId,
         },
       });
-  
-      let blockhash = await this.program.provider.connection.getLatestBlockhash('finalized');
-      tx.recentBlockhash = blockhash.blockhash;
-      tx.feePayer = authority.publicKey;
-      // txs.push(tx);
 
       const [vaultPda, vaultStakeBump] = await getStakeAddress(
         this.key,
@@ -404,7 +410,7 @@ export class Vault {
         this.program
       );
 
-      const oneTx = await this.program.transaction.unstake(vaultStakeBump, process.env.NEXT_PUBLIC_UNSTAKE_MANUALLY === '1', {
+      const unstakeTx = await this.program.transaction.unstake(vaultStakeBump, process.env.NEXT_PUBLIC_UNSTAKE_MANUALLY === '1', {
         accounts: {
           staker: authority.publicKey,
           vault: this.key,
@@ -416,15 +422,16 @@ export class Vault {
         }
       });
 
-      if (count == 0) {
-        tx = oneTx;
+      if (count === 0) {
+        tx = claimTx;
+        tx.instructions = tx.instructions.concat(unstakeTx.instructions);
       } else {
-        tx.instructions = tx.instructions.concat(oneTx.instructions);
+        tx.instructions = tx.instructions.concat(claimTx.instructions);
+        tx.instructions = tx.instructions.concat(unstakeTx.instructions);
       }
+      count += 1;
 
-      count++;
-
-      if (count === 10 || i + 1 === stakeAccounts.length) {
+      if (count === 5 || i + 1 === stakeAccounts.length) {
         let blockhash = await this.program.provider.connection.getLatestBlockhash('finalized');
         tx.recentBlockhash = blockhash.blockhash;
         tx.feePayer = authority.publicKey;
@@ -468,7 +475,18 @@ export class Vault {
     const aliensPoolAccount = await this.mint.getAssociatedTokenAddress(aliensPool);
     const godsPoolAccount = await this.mint.getAssociatedTokenAddress(godsPool);
 
-    const tx = await this.program.transaction.claim(userType, true, {
+    let tx = await this.program.transaction.setRandom({
+      accounts: {
+        claimer: claimer.publicKey,
+        vault: this.key,
+        user,
+        systemProgram: SystemProgram.programId,
+      }
+    });
+    let txSignature = await claimer.sendTransaction(tx, this.program.provider.connection);
+    await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");
+
+    tx = await this.program.transaction.claim(userType, true, {
       accounts: {
         claimer: claimer.publicKey,
         vault: this.key,
@@ -489,7 +507,7 @@ export class Vault {
       },
     });
 
-    const txSignature = await claimer.sendTransaction(tx, this.program.provider.connection, { skipPreflight: true} );
+    txSignature = await claimer.sendTransaction(tx, this.program.provider.connection, { skipPreflight: true} );
     await this.program.provider.connection.confirmTransaction(txSignature, "confirmed");
   }
   /*
@@ -572,5 +590,6 @@ export type StakeItemData = {
   firstStakedTime: anchor.BN;
   lastClaimedTime: anchor.BN;
   earnedReward: anchor.BN;
+  rand: number,
 }
 
